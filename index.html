@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div class="world">
+            <div class="player-zone" data-zone-x="0" data-zone-y="0">
+                <img class="player" data-x ="1" data-y="10" data-step="1" src="./assets/player/standingUp.png">
+            </div>
+
+            <div class="zoneTiles">
+                
+            </div>
+
+            <div class="control-zone">
+                <button class ='move-btn' id="Up">up</button>
+                <button class ='move-btn' id="Down">down</button>
+                <button class ='move-btn' id="Left">left</button>
+                <button class ='move-btn' id="Right">right</button>
+                <button class ='int-btn' id="Int">interact</button>
+            </div>
+
+            
+
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script src="./worldScript.js"></script>
+</html>

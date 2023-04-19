@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+
+*{
+    margin: 0;
+}
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(0, 0, 0);
+    height:100vh;
+
+}
+
+.world{
+    height:100%;
+    width: 100vh;
+    display: inline-flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+
+}
+
+.zoneTiles{
+    height:100%;
+    width: 100vh;
+    display: inline-flex;
+    flex-wrap: wrap;
+    overflow: hidden;
+    outline: 5px solid black; 
+
+}
+.player-zone{
+    position: absolute;
+    width: 10vh;
+    height: 10vh;
+    margin-left: auto; 
+    margin-right: auto; 
+}
+
+.player {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 9;
+
+}
+
+.world-obj {
+    align-items: center;
+    height:10%;
+    width: 10vh;
+    display: inline-block;
+    background-size: cover;
+    
+}
+
+.control-zone {
+    position: absolute;
+    display: block;
+    width: 30vh;
+    height: 15vh;
+    bottom: 15vh;
+    background-color: rgba(128, 128, 128, 0.384);
+
+}
+
+.hud {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 3vh;
+    padding: 5vh;
+    position: absolute;
+    box-sizing: border-box;
+    display: block;
+    width: 100vh;
+    height: 25vh;
+    bottom: 0;
+    background-color: white;
+    border: 1vh solid rgb(0, 0, 0);
+    margin-right: 5px;
+    
+    
+}
+
+.arrow {
+    position: absolute;
+    height: 3vh;
+    padding: 0 5vh 3vh 0;
+    right: 0;
+    bottom: 0;
+}
+
