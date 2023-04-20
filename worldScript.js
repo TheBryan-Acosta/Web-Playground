@@ -1,41 +1,48 @@
-const zone2 =   [[3,3,3,3,3,3,3,3,3,3]
-                ,[4,4,4,4,4,1,0,1,0,1]
-                ,[4,4,4,4,4,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]];
+const zone2 =   [[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[0,0,0,0,0,0,1,1,1,1]
+                ,[0,0,0,0,0,0,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]];
 
-const zone1 =   [[1,0,1,0,1,3,3,3,3,3]
-                ,[0,1,0,1,0,1,4,4,4,4]
-                ,[3,0,3,5,1,0,4,4,4,4]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,4,4,4,1,0,1,0,1]
-                ,[1,0,4,3,4,0,1,0,1,0]
-                ,[0,1,4,4,4,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]];
+const zone1 =   [[1,1,1,1,3,3,3,1,1,1]
+                ,[2,2,2,2,1,5,1,2,2,2]
+                ,[3,1,1,0,0,0,0,0,0,0]
+                ,[2,3,1,0,0,0,0,0,0,0]
+                ,[3,1,1,1,1,1,1,1,1,1]
+                ,[2,3,4,4,4,1,4,4,4,1]
+                ,[3,1,4,4,4,1,4,4,4,1]
+                ,[2,3,3,3,3,3,3,1,1,1]
+                ,[3,3,3,3,3,3,1,1,1,1]
+                ,[2,2,2,2,2,2,2,2,2,2]];
 
-const emptyzone =   [[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]
-                ,[1,0,1,0,1,0,1,0,1,0]
-                ,[0,1,0,1,0,1,0,1,0,1]];
+const emptyzone =[[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]
+                ,[1,1,1,1,1,1,1,1,1,1]];
+
+                
 
 const world = [[zone1,zone2,emptyzone],
                [emptyzone,emptyzone,emptyzone],
                [emptyzone,emptyzone,emptyzone],
 ]
 
+
+function worldTree() {
+    this.walkable = false;
+    this.src = "url('./assets/enviroment/bigTree.png')"; 
+}
 
 function worldLand1() {
     this.walkable = true;
@@ -63,45 +70,67 @@ function zone1Sign(){
     this.type = 'sign'
     this.text = 'What do you call a cow with no legs? Ground beef!!!';
 }
+
+function worldNone(){
+    this.walkable = false;
+    
+}
+
 function worldGen(zoneData){
     for(var y = 0; y < zoneData.length;y++){
 
     for(x=0; x< 10;x++){
-
         var objEl = document.createElement('div');
         var id = zoneData[y][x];
-
+        let objdata;
         switch(id){
+            case 9:
+                objdata = new worldNone;
+                $(objEl).css("background-size", "cover");
+
+                break;
             case 0:
                 //empty
-                var objdata = new worldLand0;
+                objdata = new worldLand0;
+                $(objEl).css("background-size", "cover");
             break;
 
             case 1:
                 //grass
-                var objdata = new worldLand1;
+                objdata = new worldLand1;
+                $(objEl).css("background-size", "cover");
             break;
 
             case 2:
-                //
+                //tree
+                objdata = new worldTree;
+                $(objEl).css("background", "10vh 10vh")
+                $(objEl).css("background-size", "cover");
+                let queryString = '#' + (x + 1) + '-' + Math.abs((y) - 11)
+                console.log(queryString)
+                $(queryString).css("background-image", objdata.src);
+
             break;
 
             case 3:
                 //pillar
-                var objdata = new worldPillar;
+                objdata = new worldPillar;
+                $(objEl).css("background-size", "cover");
             break;
 
             case 4:
                 //shrub
-                var objdata = new worldShrub;
+                objdata = new worldShrub;
                 $(objEl).attr('data-enemys', objdata.enemys);
+                $(objEl).css("background-size", "cover");
             break;
 
             case 5:
                 //zone 1 sign
-                var objdata = new zone1Sign();
+                objdata = new zone1Sign();
                 $(objEl).attr('data-text', objdata.text);
                 $(objEl).attr('data-type', objdata.type);
+                $(objEl).css("background-size", "cover");
             break;
         }
 
@@ -152,57 +181,6 @@ function loadZone(zoneX, zoneY, direction){
 
 }
 
-function worldGen(zoneData){
-    for(var y = 0; y < zoneData.length;y++){
-
-    for(x=0; x< 10;x++){
-
-        var objEl = document.createElement('div');
-        var id = zoneData[y][x];
-
-        switch(id){
-            case 0:
-                //empty
-                var objdata = new worldLand0;
-            break;
-
-            case 1:
-                //grass
-                var objdata = new worldLand1;
-            break;
-
-            case 2:
-                //
-            break;
-
-            case 3:
-                //pillar
-                var objdata = new worldPillar;
-            break;
-
-            case 4:
-                //shrub
-                var objdata = new worldShrub;
-                $(objEl).attr('data-enemys', objdata.enemys);
-            break;
-
-            case 5:
-                //zone 1 sign
-                var objdata = new zone1Sign();
-                $(objEl).attr('data-text', objdata.text);
-                $(objEl).attr('data-type', objdata.type);
-            break;
-        }
-
-        $(objEl).addClass('world-obj');
-        $(objEl).attr('id', (x + 1) + '-' + Math.abs((y) - 10));
-        $(objEl).attr('data-walkable', objdata.walkable);
-        objEl.style.backgroundImage = objdata.src;
-        $(".zoneTiles").append(objEl);
-    }
-}
-
-}
 
 
 
@@ -248,7 +226,7 @@ $(document).ready(function() {
         }
 
         else{
-            p.attr('src' , './assets/player/standing' + direction +'.PNG')
+            p.attr('src' , './assets/player/standing' + direction +'.png')
             p.attr('data-direction', direction);
             var zoneX = Number($('.player-zone').attr('data-zone-x'));
             var zoneY = Number($('.player-zone').attr('data-zone-y'));
@@ -295,7 +273,7 @@ function moveChar(player, x, y, direction, w){
     let offset = 0;
     switch(direction){
         case 'Up':
-            offset = 1;
+            offset = 2;
             y++;
             step = player.attr('data-step');
             marginStyle = 'bottom';
@@ -303,7 +281,7 @@ function moveChar(player, x, y, direction, w){
             break;
 
         case 'Down':
-            offset = 1;
+            offset = 2;
             y--;
             step = player.attr('data-step');
             marginStyle = 'bottom';
@@ -330,12 +308,12 @@ function moveChar(player, x, y, direction, w){
         frame++;
         player.css(marginStyle, ((frame*marginChange)+offset) + 'vh');
         if(frame == 15){
-            player.attr('src' , './assets/player/standing' + direction +'.PNG')
+            player.attr('src' , './assets/player/standing' + direction +'.png')
         }
         if(frame == 20) {
             clearInterval(timerID);
             player.css("left", "0");
-            player.css("bottom", "1vh");
+            player.css("bottom", "2vh");
             w.append($('.player-zone'));
             $('.move-btn').prop('disabled', false);  
         }
@@ -397,6 +375,15 @@ function displayText(hud, text){
     }, 30);
 }
 
+function forceMove(x,y){
+    $('.player').attr('data-x', x);
+    $('.player').attr('data-y', y);
+    let pz = $('.player-zone');
+
+    $('#'+(x) + '-' + (y)).append(pz);
+
+}
 
 
 worldGen(zone1);
+forceMove(5,8);
