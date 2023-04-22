@@ -107,7 +107,6 @@ function worldGen(zoneData){
                 $(objEl).css("background", "10vh 10vh")
                 $(objEl).css("background-size", "cover");
                 let queryString = '#' + (x + 1) + '-' + Math.abs((y) - 11)
-                console.log(queryString)
                 $(queryString).css("background-image", objdata.src);
 
             break;
@@ -220,7 +219,7 @@ $(document).ready(function() {
     
             if(w.attr('data-enemys')){
                 if(Math.random() > .66){
-                    console.log('fight');
+                    fightScene(p);
                 }
             }
         }
@@ -384,6 +383,15 @@ function forceMove(x,y){
 
 }
 
+async function fightScene(p){
+    let responseP = await fetch('https://pokeapi.co/api/v2/pokemon/' + $(p).attr('data-pokemon'));
+    let jsonDataP = await responseP.json();
+
+    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + 'pikachu');
+    let jsonDataE = await responseE.json();
+    console.log(jsonDataP.sprites.back_default)
+    console.log(jsonDataE);
+}
 
 worldGen(zone1);
 forceMove(5,8);
