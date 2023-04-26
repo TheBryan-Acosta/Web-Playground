@@ -75,6 +75,15 @@
     pointer-events: none
 }
 
+.world-filter2 {
+    position: absolute;
+    display: block;
+    width: 100vh;
+    height: 100vh;
+    pointer-events: none;
+    
+}
+
 .hud {
     font-family: 'Press Start 2P', cursive;
     font-size: 3vh;
@@ -99,5 +108,43 @@
     padding: 0 5vh 3vh 0;
     right: 0;
     bottom: 0;
+}
+
+.fight-screen{
+    position: absolute;
+    box-sizing: border-box;
+    display: block;
+    height: 100vh;
+    width: 100vh;
+    background-color: white;
+    image-rendering: pixelated;
+    overflow: hidden;
+}
+
+.player-pokemon{
+    position: absolute;
+    box-sizing: border-box;
+    height: 30vh;
+    width: 30vh;
+    display: block;
+    background-size: contain;
+    bottom: 33vh;
+    right: -20vh;
+    image-rendering: pixelated;
+    filter: grayscale(100%);
+
+}
+
+.enemy-pokemon{
+    position: absolute;
+    box-sizing: border-box;
+    height: 30vh;
+    width: 30vh;
+    display: block;
+    background-size: cover;
+    bottom: 66vh;
+    left: -20vh;
+    image-rendering: pixelated;
+    filter: grayscale(100%);
 }
 

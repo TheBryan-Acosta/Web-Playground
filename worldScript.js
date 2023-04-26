@@ -76,6 +76,8 @@ function worldNone(){
     
 }
 
+$('.fight-screen').hide();
+
 function worldGen(zoneData){
     for(var y = 0; y < zoneData.length;y++){
 
@@ -216,12 +218,6 @@ $(document).ready(function() {
 
         if(w.attr('data-walkable')  === 'true'){
             moveChar(p, x, y, direction, w);
-    
-            if(w.attr('data-enemys')){
-                if(Math.random() > .66){
-                    fightScene(p);
-                }
-            }
         }
 
         else{
@@ -235,6 +231,10 @@ $(document).ready(function() {
             }
         }
     });
+
+    $('.world').on ('keypress', function (e) {
+        console.log(String.fromCharCode(e.which));
+    })
 
     $('#Int').click(function(){
         let p =  $('.player');
@@ -314,7 +314,15 @@ function moveChar(player, x, y, direction, w){
             player.css("left", "0");
             player.css("bottom", "2vh");
             w.append($('.player-zone'));
-            $('.move-btn').prop('disabled', false);  
+            $('.move-btn').prop('disabled', false);
+
+            if(w.attr('data-enemys')){
+                if(Math.random() > .66){
+                    $('.control-zone').hide();
+                    fightScene(player);
+                }
+            }
+
         }
     }, 16.7);
     player.attr('data-x', (x));
@@ -332,13 +340,12 @@ function moveChar(player, x, y, direction, w){
     }
 
     
+    
 }
 
 function interact(w){
-    console.log(w)
     switch(w.attr('data-type')){
         case 'sign':
-            console.log('hit')
             let hud = document.createElement('div');
             $(hud).addClass('hud');
             $(hud).attr('id', 'text-box')
@@ -351,7 +358,6 @@ function interact(w){
 }
 
 function displayText(hud, text){
-    $('.control-zone').hide();
     let char = 0;
     let textScroll;
     let buildText = '';
@@ -362,13 +368,12 @@ function displayText(hud, text){
 
         if(char === text.length){
             clearInterval(textScroll);
-            var arrow = document.createElement('img');
+            let arrow = document.createElement('img');
             $(arrow).addClass('arrow');
             $(arrow).attr('src', './assets/ui/arrow.png');
             $(hud).append(arrow);
             $('.hud').click(function(){
-                $('.hud').remove();
-                $('.control-zone').show();
+                $('.hud').text('')
             });
         }
     }, 30);
@@ -389,9 +394,60 @@ async function fightScene(p){
 
     let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + 'pikachu');
     let jsonDataE = await responseE.json();
-    console.log(jsonDataP.sprites.back_default)
-    console.log(jsonDataE);
+
+    let sprites = jsonDataP.sprites.versions['generation-ii'].gold;
+
+    let spritesE = jsonDataE.sprites.versions['generation-ii'].gold;
+    console.log(sprites) 
+    $('.control-zone').hide();
+   
+
+    let intro = 'Wild ' + jsonDataE.name + ' appeared!';
+    
+    let allTiles = $('.world-obj');
+    let i = 0;
+    let frame = 0
+    //"url(" + sprites.back_default +  "
+    $('.player-pokemon').css('background-image', "url(https://archives.bulbagarden.net/media/upload/5/53/GSC_Ethan_Back.png)")
+    $('.enemy-pokemon').css('background-image', "url(" + spritesE.front_default +  ")")
+    
+    startAni = setInterval( await function(){
+        
+        $(allTiles[i]).css('background', 'black');
+        i++
+        frame++
+
+        
+        if(frame == 100){
+            p.hide();
+        }
+
+        if(frame == 130){
+            $('.fight-screen').show();
+            
+        }
+
+        if( frame > 130 && frame < 200){
+            $('.player-pokemon').css('right', ( (frame - 150) * 1.2)+ 'vh');
+            $('.enemy-pokemon').css('left', ( (frame - 150) * 1.3)+ 'vh');
+        }
+        
+            
+
+        if(frame == 200){
+            
+            $('.player-pokemon').css('filter', 'none');
+            $('.enemy-pokemon').css('filter', 'none');
+        }
+
+        if(frame == 230){
+            clearInterval(startAni);
+            displayText($('.hud'), intro)
+        }
+    }, 16.7);
+
 }
+
 
 worldGen(zone1);
 forceMove(5,8);
