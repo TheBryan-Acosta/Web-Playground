@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
+@font-face {
+    font-family: 'pokefont';
+    src: url('./assets/ui/font.ttf');
+  }
+
 
 *{
     margin: 0;
@@ -85,9 +90,11 @@
 }
 
 .hud {
-    font-family: 'Press Start 2P', cursive;
-    font-size: 3vh;
+    font-family: 'pokefont';
+    font-size: 5vh;
+    letter-spacing: .4vh;
     padding: 5vh;
+    line-height: 11vh;
     position: absolute;
     box-sizing: border-box;
     display: block;
@@ -95,9 +102,13 @@
     height: 30vh;
     bottom: 0;
     background-color: white;
-    border: 1vh solid rgb(0, 0, 0);
     margin-right: 5px;
     z-index: 9;
+    display: none;
+    image-rendering: pixelated;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-image: url('./assets/ui/chatbox1.png');
     
     
 }
@@ -121,6 +132,23 @@
     overflow: hidden;
 }
 
+.pokebar{
+    position: absolute;
+    background-image: url('./assets/ui/pokebar.png');
+    right: 7vh;
+    bottom: 30vh;
+    height: 12vh;
+    width: 40vh;
+    background-size: cover;
+}
+
+.pokebarBalls{
+    width: 61%;
+    height: 34%;
+    display: inline-flex;
+    margin-top: 10%;
+    margin-left: 21%;
+}
 .player-pokemon{
     position: absolute;
     box-sizing: border-box;
@@ -128,7 +156,8 @@
     width: 30vh;
     display: block;
     background-size: contain;
-    bottom: 33vh;
+    background-repeat: no-repeat;
+    bottom: 30vh;
     right: -20vh;
     image-rendering: pixelated;
     filter: grayscale(100%);

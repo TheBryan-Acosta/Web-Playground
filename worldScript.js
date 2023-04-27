@@ -31,7 +31,10 @@ const emptyzone =[[1,1,1,1,1,1,1,1,1,1]
                 ,[1,1,1,1,1,1,1,1,1,1]
                 ,[1,1,1,1,1,1,1,1,1,1]];
 
-                
+                let equipedPokemon = {
+                    1: 'charmander',
+                    2: 'pikachu'
+                }
 
 const world = [[zone1,zone2,emptyzone],
                [emptyzone,emptyzone,emptyzone],
@@ -77,6 +80,7 @@ function worldNone(){
 }
 
 $('.fight-screen').hide();
+$('.pokebar').hide();
 
 function worldGen(zoneData){
     for(var y = 0; y < zoneData.length;y++){
@@ -346,11 +350,15 @@ function moveChar(player, x, y, direction, w){
 function interact(w){
     switch(w.attr('data-type')){
         case 'sign':
-            let hud = document.createElement('div');
-            $(hud).addClass('hud');
-            $(hud).attr('id', 'text-box')
-            $('.world').append(hud);
+            let hud = $('.hud')
+            $(hud).show();
             displayText(hud, $(w).attr('data-text'));
+            console.log('hit')
+            $(hud).one('click', function () {
+                $(hud).text(' ');
+                $(hud).hide();
+                
+            })
             break;
 
     }
@@ -358,11 +366,14 @@ function interact(w){
 }
 
 function displayText(hud, text){
+    $(hud).text(' ');
+    console.log(text)
     let char = 0;
     let textScroll;
     let buildText = '';
     textScroll = setInterval(function(){
         buildText = buildText + text[char];
+        console.log(buildText)
         $(hud).text(buildText)
         char++;
 
@@ -372,9 +383,7 @@ function displayText(hud, text){
             $(arrow).addClass('arrow');
             $(arrow).attr('src', './assets/ui/arrow.png');
             $(hud).append(arrow);
-            $('.hud').click(function(){
-                $('.hud').text('')
-            });
+            
         }
     }, 30);
 }
@@ -388,11 +397,30 @@ function forceMove(x,y){
 
 }
 
+function pokebar(pokemonObj){
+    let flexBox = $('.pokebarBalls');
+    for(i = 0; i < 7;i++){
+        if(Object.keys(pokemonObj).length > i){
+            let barItem = document.createElement('img')
+            $(barItem).attr('src', './assets/ui/pokeball.png')
+            $(flexBox).append(barItem);
+        }
+        else{
+            let barItem = document.createElement('img')
+            $(barItem).attr('src', './assets/ui/emptyball.png')
+            $(flexBox).append(barItem);
+        }
+    }
+    $('.pokebar').show();
+    
+    
+}
+
 async function fightScene(p){
     let responseP = await fetch('https://pokeapi.co/api/v2/pokemon/' + $(p).attr('data-pokemon'));
     let jsonDataP = await responseP.json();
 
-    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + 'pikachu');
+    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + (Math.floor(Math.random() * 251)));
     let jsonDataE = await responseE.json();
 
     let sprites = jsonDataP.sprites.versions['generation-ii'].gold;
@@ -402,7 +430,8 @@ async function fightScene(p){
     $('.control-zone').hide();
    
 
-    let intro = 'Wild ' + jsonDataE.name + ' appeared!';
+    let intro = 'W i l d ' +jsonDataE.name.toUpperCase() + ' appeared!';
+
     
     let allTiles = $('.world-obj');
     let i = 0;
@@ -413,8 +442,11 @@ async function fightScene(p){
     
     startAni = setInterval( await function(){
         
-        $(allTiles[i]).css('background', 'black');
-        i++
+        if(frame < 100){
+            $(allTiles[i]).css('background', 'black');
+            i++;
+        }
+        
         frame++
 
         
@@ -424,6 +456,7 @@ async function fightScene(p){
 
         if(frame == 130){
             $('.fight-screen').show();
+            $('.hud').show();
             
         }
 
@@ -435,15 +468,64 @@ async function fightScene(p){
             
 
         if(frame == 200){
-            
+            let priev = $('.player-pokemon').css('right');
             $('.player-pokemon').css('filter', 'none');
             $('.enemy-pokemon').css('filter', 'none');
         }
 
         if(frame == 230){
-            clearInterval(startAni);
+            pokebar(equipedPokemon);
+            
             displayText($('.hud'), intro)
         }
+
+        if(frame > 260 && frame < 263){
+            $('.hud').one('click', function () {
+                $('.hud').text('')
+                console.log(frame);
+                frame = 280
+            })
+            frame--
+        }
+
+        if(frame == 285){
+            intro = 'GO! ' + equipedPokemon[1].toUpperCase() +'!';
+                displayText($('.hud'), intro)
+            $('.pokebar').hide();
+        }
+
+        if( frame > 285 && frame < 330){
+            $('.player-pokemon').css('right', ( ((frame - 85) - 150) * 1.2)+ 'vh');
+        }
+
+        if( frame == 330){
+            $('.player-pokemon').css('right', '55vh');
+            $('.player-pokemon').css('background-image', "url(./assets/ui/gas1.png)")
+
+        }
+
+        if( frame == 335){
+            $('.player-pokemon').css('background-image', "url(./assets/ui/gas2.png)")
+
+        }
+
+        if( frame == 340){
+            $('.player-pokemon').css('background-image', "url(./assets/ui/gas3.png)")
+
+        }
+        if( frame == 345){
+            $('.player-pokemon').css('background-image', "url(./assets/ui/gas4.png)")
+
+        }
+
+        if( frame == 347){
+            $('.player-pokemon').css('background-image', "url(" + sprites.back_default +  ")")
+
+        }
+
+
+  
+
     }, 16.7);
 
 }
