@@ -8,6 +8,10 @@
 
 *{
     margin: 0;
+    font-family: 'pokefont';
+    font-weight: lighter;
+    font-size: 4.05vh;
+    letter-spacing: .4vh;
 }
 .container {
     display: flex;
@@ -177,3 +181,69 @@
     filter: grayscale(100%);
 }
 
+.enemyhealth{
+    position: absolute;
+    box-sizing: border-box;
+    background: url('./assets/ui/enemyhealth.png');
+    height: 19vh;
+    width: 45vh;
+    display: block;
+    background-size: cover;
+    top: 5vh;
+    left: 7vh;
+    image-rendering: pixelated;
+}
+
+.playerhealth{
+    position: absolute;
+    box-sizing: border-box;
+    background: url('./assets/ui/playerhealth.png');
+    height: 20vh;
+    width: 45vh;
+    display: block;
+    background-size: cover;
+    bottom: 30vh;
+    right: 0;
+    image-rendering: pixelated;
+}
+.playerhealth h2 {
+    width: 40%;
+    justify-items: end;
+    height: 21%;
+    top: 20%;
+    right: 3vh;
+    position: absolute;
+    background-size: cover;
+    letter-spacing: .4vh;
+    image-rendering: pixelated;
+    
+
+}
+
+.playerhealth img {
+    position: absolute;
+    height: 4.5vh;
+    right: 17%;
+    top: 19%;
+    
+}
+
+
+.enemyhealth h2 {
+    width: 40%;
+    justify-items: end;
+    height: 24%;
+    right: 0vh;
+    position: absolute;
+    background-size: cover;
+    letter-spacing: .4vh;
+    image-rendering: pixelated;
+
+}
+
+.enemyhealth img {
+    position: absolute;
+    height: 4.5vh;
+    right: 4.6vh;
+    
+}

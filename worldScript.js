@@ -71,7 +71,7 @@ function zone1Sign(){
     this.walkable = false;
     this.src = "url('./assets/enviroment/sign.png')";
     this.type = 'sign'
-    this.text = 'What do you call a cow with no legs? Ground beef!!!';
+    this.text = 'What do you call a cow with no legs?splitGround beef!!!';
 }
 
 function worldNone(){
@@ -236,9 +236,6 @@ $(document).ready(function() {
         }
     });
 
-    $('.world').on ('keypress', function (e) {
-        console.log(String.fromCharCode(e.which));
-    })
 
     $('#Int').click(function(){
         let p =  $('.player');
@@ -353,36 +350,62 @@ function interact(w){
             let hud = $('.hud')
             $(hud).show();
             displayText(hud, $(w).attr('data-text'));
-            console.log('hit')
-            $(hud).one('click', function () {
-                $(hud).text(' ');
-                $(hud).hide();
-                
-            })
             break;
 
     }
     
 }
 
-function displayText(hud, text){
+function displayText(hud, text, i){
+    if(!i){
+        i = 0;
+    }
     $(hud).text(' ');
-    console.log(text)
     let char = 0;
     let textScroll;
     let buildText = '';
-    textScroll = setInterval(function(){
-        buildText = buildText + text[char];
-        console.log(buildText)
+    let textArr = text.split('split');
+        let currText = textArr[i];
+        textScroll = setInterval( function(){
+        buildText = buildText + currText[char];
         $(hud).text(buildText)
         char++;
 
-        if(char === text.length){
+        if(char === currText.length){
             clearInterval(textScroll);
-            let arrow = document.createElement('img');
+            
+            
+            if((i + 1) == textArr.length){
+                if($('.fight-screen').is(":hidden") === true){
+                    $(hud).one('click', function () {
+                        $(hud).text('');
+                        $(hud).hide();
+                    })
+                    
+                }
+                else{
+                    let arrow = document.createElement('img');
             $(arrow).addClass('arrow');
             $(arrow).attr('src', './assets/ui/arrow.png');
             $(hud).append(arrow);
+                    $(hud).one('click', function () {
+                        $(hud).text('');
+                    })
+                }
+            }
+            i++;
+            if(i < textArr.length){
+                let arrow = document.createElement('img');
+            $(arrow).addClass('arrow');
+            $(arrow).attr('src', './assets/ui/arrow.png');
+            $(hud).append(arrow);
+                $(hud).one('click', function () { 
+                    displayText(hud, text, i);
+                    
+                })
+            }
+            
+            
             
         }
     }, 30);
@@ -416,17 +439,47 @@ function pokebar(pokemonObj){
     
 }
 
+function enemyInfoBar(pokeInfo, level, gender){
+    let pokeHealthEl = document.createElement('div');
+    $(pokeHealthEl).addClass('enemyhealth');
+    $(pokeHealthEl).append('<h1>'+ pokeInfo.name.toUpperCase() + '</h1>');
+    $(pokeHealthEl).append("<img src='./assets/ui/levelSym.png'>" + '<h2>'+  level + '' + '</h2>' + "<img src='./assets/ui/"+ gender + ".png'>");
+    $('.fight-screen').append(pokeHealthEl)
+
+}
+
+function playerInfoBar(pokeInfo, level, gender){
+    let pokeHealthEl = document.createElement('div');
+    $(pokeHealthEl).addClass('playerhealth');
+    $(pokeHealthEl).append('<h1>'+ pokeInfo.name.toUpperCase() + '</h1>');
+    $(pokeHealthEl).append("<img src='./assets/ui/levelSym.png'>" + '<h2>'+  level + '' + '</h2>' + "<img src='./assets/ui/"+ gender + ".png'>");
+    $('.fight-screen').append(pokeHealthEl)
+
+}
+
+function statCalc(){
+
+}
+function enemyPokemon(data) {
+    this.name = data.name
+    this.image = data.sprites.versions['generation-ii'].gold;
+    this.hp = data.stats[0].base_stat;
+
+}
+
 async function fightScene(p){
     let responseP = await fetch('https://pokeapi.co/api/v2/pokemon/' + $(p).attr('data-pokemon'));
     let jsonDataP = await responseP.json();
 
-    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + (Math.floor(Math.random() * 251)));
+    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + 'rattata');
     let jsonDataE = await responseE.json();
 
+    let enemy = new enemyPokemon(jsonDataE);
+    console.log(enemy);
+    console.log(jsonDataP);
     let sprites = jsonDataP.sprites.versions['generation-ii'].gold;
 
     let spritesE = jsonDataE.sprites.versions['generation-ii'].gold;
-    console.log(sprites) 
     $('.control-zone').hide();
    
 
@@ -479,13 +532,15 @@ async function fightScene(p){
             displayText($('.hud'), intro)
         }
 
-        if(frame > 260 && frame < 263){
+        if(frame == 263){
             $('.hud').one('click', function () {
                 $('.hud').text('')
-                console.log(frame);
-                frame = 280
+                enemyInfoBar(jsonDataE, '5', 'female');
+                
+                frame = 280;
+                
             })
-            frame--
+            frame = 'paused';
         }
 
         if(frame == 285){
@@ -522,9 +577,24 @@ async function fightScene(p){
             $('.player-pokemon').css('background-image', "url(" + sprites.back_default +  ")")
 
         }
+        
 
+        if( frame == 347){
+            $('.player-pokemon').css('background-image', "url(" + sprites.back_default +  ")")
 
-  
+        }
+
+        if(frame == 380){
+            $('.hud').text('')
+        }
+        
+
+        if( frame == 400){
+            $('.hud').css('background-image', "url(./assets/ui/fightbox.png)")
+            playerInfoBar(jsonDataP, '5', 'male');
+            
+        }
+
 
     }, 16.7);
 
