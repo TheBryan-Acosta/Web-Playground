@@ -1,13 +1,7 @@
-const zone2 =   [[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[0,0,0,0,0,0,1,1,1,1]
-                ,[0,0,0,0,0,0,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]];
+let equipedPokemon = {
+    1: 'charmander',
+    2: 'pikachu'
+}
 
 const zone1 =   [[1,1,1,1,3,3,3,1,1,1]
                 ,[2,2,2,2,1,5,1,2,2,2]
@@ -31,53 +25,49 @@ const emptyzone =[[1,1,1,1,1,1,1,1,1,1]
                 ,[1,1,1,1,1,1,1,1,1,1]
                 ,[1,1,1,1,1,1,1,1,1,1]];
 
-                let equipedPokemon = {
-                    1: 'charmander',
-                    2: 'pikachu'
-                }
+const nonezone = [[1,1,1,1,1,1,1,1,1,1],
+                  [1,1,1,1,0,5,0,1,1,1],
+                  [1,4,0,0,0,0,0,0,0,0],
+                  [1,1,0,0,0,0,0,0,0,0],
+                  [1,0,0,0,0,0,0,0,0,0],
+                  [1,1,2,2,2,0,2,2,2,0],
+                  [1,0,2,2,2,0,2,2,2,0],
+                  [1,1,1,1,1,1,1,0,0,0],
+                  [1,1,1,1,1,1,1,1,1,1],
+                  [1,1,1,1,1,1,1,1,1,1]];
 
-const world = [[zone1,zone2,emptyzone],
+const world = [[nonezone,emptyzone,emptyzone],
                [emptyzone,emptyzone,emptyzone],
                [emptyzone,emptyzone,emptyzone],
 ]
 
-
-function worldTree() {
-    this.walkable = false;
-    this.src = "url('./assets/enviroment/bigTree.png')"; 
-}
-
-function worldLand1() {
+function worldWalkable(){
     this.walkable = true;
-    this.src = "url('./assets/enviroment/land1.png')"; 
+    
 }
 
-function worldLand0() {
-    this.walkable = true;
-    this.src = "url('./assets/enviroment/land0.png')"; 
-}
-
-function worldPillar() {
+function worldUnwalkable(){
     this.walkable = false;
-    this.src = "url('./assets/enviroment/pillar.png')"; 
+    
 }
 
 function worldShrub() {
     this.walkable = true;
-    this.src = "url('./assets/enviroment/bush.png')";
     this.enemys = 1;
 }
-function zone1Sign(){
+
+function amongus(){
     this.walkable = false;
-    this.src = "url('./assets/enviroment/sign.png')";
     this.type = 'sign'
     this.text = 'What do you call a cow with no legs?splitGround beef!!!';
 }
-
-function worldNone(){
+function zone1Sign(){
     this.walkable = false;
-    
+    this.type = 'sign'
+    this.text = 'Welcome to zone1!';
 }
+
+
 
 $('.fight-screen').hide();
 $('.pokebar').hide();
@@ -87,56 +77,39 @@ function worldGen(zoneData){
 
     for(x=0; x< 10;x++){
         var objEl = document.createElement('div');
+        $(objEl).css("background-size", "cover");
         var id = zoneData[y][x];
         let objdata;
         switch(id){
-            case 9:
-                objdata = new worldNone;
-                $(objEl).css("background-size", "cover");
-
-                break;
+            
             case 0:
                 //empty
-                objdata = new worldLand0;
-                $(objEl).css("background-size", "cover");
+                objdata = new worldWalkable;
             break;
 
             case 1:
                 //grass
-                objdata = new worldLand1;
-                $(objEl).css("background-size", "cover");
+                objdata = new worldUnwalkable;
             break;
 
             case 2:
-                //tree
-                objdata = new worldTree;
-                $(objEl).css("background", "10vh 10vh")
-                $(objEl).css("background-size", "cover");
-                let queryString = '#' + (x + 1) + '-' + Math.abs((y) - 11)
-                $(queryString).css("background-image", objdata.src);
-
-            break;
-
-            case 3:
-                //pillar
-                objdata = new worldPillar;
-                $(objEl).css("background-size", "cover");
-            break;
-
-            case 4:
-                //shrub
+                //enemyshrub
                 objdata = new worldShrub;
                 $(objEl).attr('data-enemys', objdata.enemys);
-                $(objEl).css("background-size", "cover");
             break;
 
+            
             case 5:
                 //zone 1 sign
                 objdata = new zone1Sign();
                 $(objEl).attr('data-text', objdata.text);
                 $(objEl).attr('data-type', objdata.type);
-                $(objEl).css("background-size", "cover");
             break;
+
+            case 4:
+                objdata = new amongus();
+                $(objEl).attr('data-text', objdata.text);
+                $(objEl).attr('data-type', objdata.type);
         }
 
         $(objEl).addClass('world-obj');
@@ -265,7 +238,7 @@ $(document).ready(function() {
 });
 
 function moveChar(player, x, y, direction, w){
-    $('.move-btn').prop('disabled', true);
+    $('button').prop('disabled', true);
     let marginStyle;
     let marginChange;
     var frame = 0;
@@ -315,12 +288,13 @@ function moveChar(player, x, y, direction, w){
             player.css("left", "0");
             player.css("bottom", "2vh");
             w.append($('.player-zone'));
-            $('.move-btn').prop('disabled', false);
+            $('button').prop('disabled', false);
 
             if(w.attr('data-enemys')){
                 if(Math.random() > .66){
+                    let hud = $('.hud')
                     $('.control-zone').hide();
-                    fightScene(player);
+                    fightScene(player, hud);
                 }
             }
 
@@ -439,11 +413,12 @@ function pokebar(pokemonObj){
     
 }
 
-function enemyInfoBar(pokeInfo, level, gender){
+function enemyInfoBar(pokeInfo){
+    let {lvl, gender, name} = pokeInfo;
     let pokeHealthEl = document.createElement('div');
     $(pokeHealthEl).addClass('enemyhealth');
-    $(pokeHealthEl).append('<h1>'+ pokeInfo.name.toUpperCase() + '</h1>');
-    $(pokeHealthEl).append("<img src='./assets/ui/levelSym.png'>" + '<h2>'+  level + '' + '</h2>' + "<img src='./assets/ui/"+ gender + ".png'>");
+    $(pokeHealthEl).append('<h1>'+ name.toUpperCase() + '</h1>');
+    $(pokeHealthEl).append("<img src='./assets/ui/levelSym.png'>" + '<h2>'+  lvl + '' + '</h2>' + "<img src='./assets/ui/"+ gender + ".png'>");
     $('.fight-screen').append(pokeHealthEl)
 
 }
@@ -457,50 +432,66 @@ function playerInfoBar(pokeInfo, level, gender){
 
 }
 
-function statCalc(){
+function calc_stat(stat, base_value,lvl, iv, ev) {
+        if(stat==='hp')
+        return Math.floor((((base_value+iv)*2+(Math.sqrt(ev)/4))*lvl)/100)+ lvl + 10;
+        else
+        return Math.floor((((base_value+iv)*2+(Math.sqrt(ev)/4))*lvl)/100)+ 5;
+    }
 
-}
-function enemyPokemon(data) {
+
+function enemyPokemon(data, lvl, iv, ev, gender) {
+    console.log(gender)
+    switch(gender){
+        case 0:
+            this.gender = 'male';
+            break;
+        case 1:
+            this.gender = 'female'
+            break;
+    }
     this.name = data.name
-    this.image = data.sprites.versions['generation-ii'].gold;
-    this.hp = data.stats[0].base_stat;
+    this.sprite = data.sprites.versions['generation-ii'].gold;
+    this.intro = 'W i l d ' +data.name.toUpperCase() + ' appeared!';
+    this.lvl = lvl;
 
+    this.Hp = calc_stat('hp', data.stats[0].base_stat, lvl, iv, ev);
+    this.MaxHp = calc_stat('hp', data.stats[0].base_stat, lvl, iv, ev);
+    this.Atk = calc_stat('atk', data.stats[1].base_stat, lvl, iv, ev);
+    this.Def = calc_stat('def', data.stats[2].base_stat, lvl, iv, ev);
+    this.spAtk = calc_stat('spatk', data.stats[3].base_stat, lvl, iv, ev);
+    this.spDef = calc_stat('spdef', data.stats[4].base_stat, lvl, iv, ev);
+    this.Speed = calc_stat('speed', data.stats[5].base_stat, lvl, iv, ev); 
 }
 
-async function fightScene(p){
+async function fightScene(p, hud){
     let responseP = await fetch('https://pokeapi.co/api/v2/pokemon/' + $(p).attr('data-pokemon'));
     let jsonDataP = await responseP.json();
 
-    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + 'rattata');
+    let responseE = await fetch('https://pokeapi.co/api/v2/pokemon/' + Math.floor(Math.random() * 251));
     let jsonDataE = await responseE.json();
 
-    let enemy = new enemyPokemon(jsonDataE);
-    console.log(enemy);
-    console.log(jsonDataP);
-    let sprites = jsonDataP.sprites.versions['generation-ii'].gold;
 
-    let spritesE = jsonDataE.sprites.versions['generation-ii'].gold;
     $('.control-zone').hide();
-   
-
-    let intro = 'W i l d ' +jsonDataE.name.toUpperCase() + ' appeared!';
-
-    
+    let enemy = new enemyPokemon(jsonDataE, (Math.floor(Math.random() * 5) + 3), 0, 0, Math.floor(Math.random() * 1));
+    console.log(jsonDataE);
+    console.log(enemy);
+    let sprites = jsonDataP.sprites.versions['generation-ii'].gold;
     let allTiles = $('.world-obj');
-    let i = 0;
     let frame = 0
-    //"url(" + sprites.back_default +  "
-    $('.player-pokemon').css('background-image', "url(https://archives.bulbagarden.net/media/upload/5/53/GSC_Ethan_Back.png)")
-    $('.enemy-pokemon').css('background-image', "url(" + spritesE.front_default +  ")")
+    let playerPokemonEl = $('.player-pokemon');
+    let enemyPokemonEl = $('.enemy-pokemon');
+
+    $(playerPokemonEl).css('background-image', "url(https://archives.bulbagarden.net/media/upload/5/53/GSC_Ethan_Back.png)")
+    $(enemyPokemonEl).css('background-image', "url(" + enemy.sprite.front_default +  ")")
     
     startAni = setInterval( await function(){
-        
+
         if(frame < 100){
-            $(allTiles[i]).css('background', 'black');
-            i++;
+            $(allTiles[frame]).css('background', 'black');
         }
         
-        frame++
+        frame++;
 
         
         if(frame == 100){
@@ -509,33 +500,33 @@ async function fightScene(p){
 
         if(frame == 130){
             $('.fight-screen').show();
-            $('.hud').show();
+            $(hud).show();
             
         }
 
         if( frame > 130 && frame < 200){
-            $('.player-pokemon').css('right', ( (frame - 150) * 1.2)+ 'vh');
-            $('.enemy-pokemon').css('left', ( (frame - 150) * 1.3)+ 'vh');
+            $(playerPokemonEl).css('right', ( (frame - 150) * 1.2)+ 'vh');
+            $(enemyPokemonEl).css('left', ( (frame - 150) * 1.3)+ 'vh');
         }
         
             
 
         if(frame == 200){
-            let priev = $('.player-pokemon').css('right');
-            $('.player-pokemon').css('filter', 'none');
-            $('.enemy-pokemon').css('filter', 'none');
+            let priev = $(playerPokemonEl).css('right');
+            $(playerPokemonEl).css('filter', 'none');
+            $(enemyPokemonEl).css('filter', 'none');
         }
 
         if(frame == 230){
             pokebar(equipedPokemon);
             
-            displayText($('.hud'), intro)
+            displayText($(hud), enemy.intro)
         }
 
         if(frame == 263){
-            $('.hud').one('click', function () {
-                $('.hud').text('')
-                enemyInfoBar(jsonDataE, '5', 'female');
+            $(hud).one('click', function () {
+                $(hud).text('')
+                enemyInfoBar(enemy);
                 
                 frame = 280;
                 
@@ -545,52 +536,52 @@ async function fightScene(p){
 
         if(frame == 285){
             intro = 'GO! ' + equipedPokemon[1].toUpperCase() +'!';
-                displayText($('.hud'), intro)
+                displayText($(hud), intro)
             $('.pokebar').hide();
         }
 
         if( frame > 285 && frame < 330){
-            $('.player-pokemon').css('right', ( ((frame - 85) - 150) * 1.2)+ 'vh');
+            $(playerPokemonEl).css('right', ( ((frame - 85) - 150) * 1.2)+ 'vh');
         }
 
         if( frame == 330){
-            $('.player-pokemon').css('right', '55vh');
-            $('.player-pokemon').css('background-image', "url(./assets/ui/gas1.png)")
+            $(playerPokemonEl).css('right', '55vh');
+            $(playerPokemonEl).css('background-image', "url(./assets/ui/gas1.png)")
 
         }
 
         if( frame == 335){
-            $('.player-pokemon').css('background-image', "url(./assets/ui/gas2.png)")
+            $(playerPokemonEl).css('background-image', "url(./assets/ui/gas2.png)")
 
         }
 
         if( frame == 340){
-            $('.player-pokemon').css('background-image', "url(./assets/ui/gas3.png)")
+            $(playerPokemonEl).css('background-image', "url(./assets/ui/gas3.png)")
 
         }
         if( frame == 345){
-            $('.player-pokemon').css('background-image', "url(./assets/ui/gas4.png)")
+            $(playerPokemonEl).css('background-image', "url(./assets/ui/gas4.png)")
 
         }
 
         if( frame == 347){
-            $('.player-pokemon').css('background-image', "url(" + sprites.back_default +  ")")
+            $(playerPokemonEl).css('background-image', "url(" + sprites.back_default +  ")")
 
         }
         
 
         if( frame == 347){
-            $('.player-pokemon').css('background-image', "url(" + sprites.back_default +  ")")
+            $(playerPokemonEl).css('background-image', "url(" + sprites.back_default +  ")")
 
         }
 
         if(frame == 380){
-            $('.hud').text('')
+            $(hud).text('')
         }
         
 
         if( frame == 400){
-            $('.hud').css('background-image', "url(./assets/ui/fightbox.png)")
+            $(hud).css('background-image', "url(./assets/ui/fightbox.png)")
             playerInfoBar(jsonDataP, '5', 'male');
             
         }
@@ -601,5 +592,5 @@ async function fightScene(p){
 }
 
 
-worldGen(zone1);
+worldGen(nonezone);
 forceMove(5,8);
