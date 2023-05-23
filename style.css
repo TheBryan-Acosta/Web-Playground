@@ -11,6 +11,11 @@
     font-family: 'pokefont';
     font-weight: lighter;
 }
+
+body{
+    background-color: rgb(0, 0, 0);
+
+}
 .container {
     display: flex;
     align-items: center;
@@ -28,19 +33,21 @@
     display: inline-flex;
     flex-wrap: wrap;
     overflow: hidden;
-    background-image: url('./assets/enviroment/zone1.png');
     background-size: contain;
+    image-rendering: pixelated;
     
 
 }
 
 .zoneTiles{
+    margin: auto;
     height:100%;
     width: 100vh;
     display: inline-flex;
     flex-wrap: wrap;
     overflow: hidden;
     outline: 5px solid black; 
+    background-size: cover;
     
 
 }
@@ -63,7 +70,7 @@
 .world-obj {
     align-items: center;
     height:10%;
-    width: 10vh;
+    width: 10%;
     display: inline-block;
     
 }
@@ -72,7 +79,7 @@
     
     position: absolute;
     display: block;
-    width: 100vh;
+    width: 30vh;
     height: 30vh;
     opacity: .5;
     transition: .1s;

@@ -3,43 +3,41 @@ let equipedPokemon = {
     2: 'pikachu'
 }
 
-const zone1 =   [[1,1,1,1,3,3,3,1,1,1]
-                ,[2,2,2,2,1,5,1,2,2,2]
-                ,[3,1,1,0,0,0,0,0,0,0]
-                ,[2,3,1,0,0,0,0,0,0,0]
-                ,[3,1,1,1,1,1,1,1,1,1]
-                ,[2,3,4,4,4,1,4,4,4,1]
-                ,[3,1,4,4,4,1,4,4,4,1]
-                ,[2,3,3,3,3,3,3,1,1,1]
-                ,[3,3,3,3,3,3,1,1,1,1]
-                ,[2,2,2,2,2,2,2,2,2,2]];
 
-const emptyzone =[[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]
-                ,[1,1,1,1,1,1,1,1,1,1]];
 
-const nonezone = [[1,1,1,1,1,1,1,1,1,1],
-                  [1,1,1,1,0,5,0,1,1,1],
-                  [1,4,0,0,0,0,0,0,0,0],
-                  [1,1,0,0,0,0,0,0,0,0],
-                  [1,0,0,0,0,0,0,0,0,0],
-                  [1,1,2,2,2,0,2,2,2,0],
-                  [1,0,2,2,2,0,2,2,2,0],
-                  [1,1,1,1,1,1,1,0,0,0],
+const zone1 = [[1,1,1,1,1,1,1,1,1,1],
                   [1,1,1,1,1,1,1,1,1,1],
-                  [1,1,1,1,1,1,1,1,1,1]];
+                  [1,0,0,1,1,1,1,1,1,1],
+                  [1,0,5,1,1,6,1,1,1,1],
+                  [1,0,0,0,0,0,0,0,0,0],
+                  [1,0,0,0,0,0,0,0,0,0],
+                  [1,0,0,0,0,0,0,0,0,0],
+                  [1,1,1,1,1,1,0,2,2,0],
+                  [1,1,1,1,1,1,0,2,2,0],
+                  [1,1,1,1,1,1,0,0,0,0]];
 
-const world = [[nonezone,emptyzone,emptyzone],
-               [emptyzone,emptyzone,emptyzone],
-               [emptyzone,emptyzone,emptyzone],
-]
+const room = [[1,1,1,1,1,1,1,1,1,1],
+               [1,1,1,1,1,1,1,1,1,7],
+               [1,1,1,1,1,1,0,0,0,0],
+               [0,0,0,1,0,0,0,0,0,0],
+               [0,0,0,1,1,1,1,1,0,0],
+               [0,0,0,0,1,1,1,1,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [0,0,0,0,0,0,0,0,0,0],
+               [1,1,1,1,1,1,8,8,1,1]];  
+
+const roomF2 = [[1,1,1,1,1,1,1,1],
+               [1,1,1,1,1,1,1,6,],
+               [0,0,1,1,1,1,0,0,],
+               [0,0,0,0,0,0,0,0,],
+               [0,0,0,0,0,0,0,0,],
+               [0,0,0,0,1,1,0,0,],
+               [0,0,0,0,0,0,0,0,],
+               [1,1,1,1,1,1,1,1,]];
+
+const world = [[zone1]];
+
 
 function worldWalkable(){
     this.walkable = true;
@@ -67,15 +65,43 @@ function zone1Sign(){
     this.text = 'Welcome to zone1!';
 }
 
+function zoneRoom(){
+    this.walkable = false;
+    this.type = 'door';
+    this.where = 'room';
+    this.grid = room;
+}
+
+function zoneRoomF2(){
+    this.walkable = false;
+    this.type = 'door';
+    this.where = 'roomF2';
+    this.grid = roomF2;
+}
+function zoneArea1(){
+    this.walkable = false;
+    this.type = 'door';
+    this.where = 'zone1';
+    this.grid = zone1;
+
+}
+
+
 
 
 $('.fight-screen').hide();
 $('.pokebar').hide();
 
-function worldGen(zoneData){
+function worldGen(zoneData, img, pz){
+
+    $('.zoneTiles').css('background-image', "url('./assets/enviroment/"+ img + ".png'")
+    console.log("url('./assets/enviroment/"+ img + ".png'")
+    console.log(zoneData.length)
+
+
     for(var y = 0; y < zoneData.length;y++){
 
-    for(x=0; x< 10;x++){
+    for(x=0; x< zoneData.length;x++){
         var objEl = document.createElement('div');
         $(objEl).css("background-size", "cover");
         var id = zoneData[y][x];
@@ -98,7 +124,13 @@ function worldGen(zoneData){
                 $(objEl).attr('data-enemys', objdata.enemys);
             break;
 
-            
+
+            case 4:
+                objdata = new amongus();
+                $(objEl).attr('data-text', objdata.text);
+                $(objEl).attr('data-type', objdata.type);
+                break;
+
             case 5:
                 //zone 1 sign
                 objdata = new zone1Sign();
@@ -106,18 +138,44 @@ function worldGen(zoneData){
                 $(objEl).attr('data-type', objdata.type);
             break;
 
-            case 4:
-                objdata = new amongus();
-                $(objEl).attr('data-text', objdata.text);
+            case 6:
+                objdata = new zoneRoom;
                 $(objEl).attr('data-type', objdata.type);
+                $(objEl).attr('data-where', objdata.where);
+                console.log(objdata.grid);
+                break;
+
+            case 7:
+                objdata = new zoneRoomF2();
+                $(objEl).attr('data-type', objdata.type);
+                $(objEl).attr('data-where', objdata.where);
+                console.log(objdata.grid);
+                break;
+
+            case 8:
+                 objdata = new zoneArea1();
+                $(objEl).attr('data-type', objdata.type);
+                $(objEl).attr('data-where', objdata.where);
+                console.log(objdata.grid);
+                break;
+
+            
         }
 
         $(objEl).addClass('world-obj');
-        $(objEl).attr('id', (x + 1) + '-' + Math.abs((y) - 10));
+        $(objEl).css('width', (100/zoneData.length)+'%')
+        $(objEl).css('height', (100/zoneData.length)+'%')
+        $(pz).css('width', (100/zoneData.length)+'vh')
+        $(pz).css('height', (100/zoneData.length)+'%')
+        $(objEl).attr('id', (x + 1) + '-' + Math.abs((y) - zoneData.length));
         $(objEl).attr('data-walkable', objdata.walkable);
         objEl.style.backgroundImage = objdata.src;
+
+        
         $(".zoneTiles").append(objEl);
+
     }
+
 }
 
 }
@@ -156,6 +214,8 @@ function loadZone(zoneX, zoneY, direction){
             $("#" + (x-9)  + '-' + y).append(pz);
             break;
     }
+
+    
 
 }
 
@@ -246,31 +306,31 @@ function moveChar(player, x, y, direction, w){
     let offset = 0;
     switch(direction){
         case 'Up':
-            offset = 2;
+            offset = 20;
             y++;
             step = player.attr('data-step');
             marginStyle = 'bottom';
-            marginChange = .5;
+            marginChange = 5;
             break;
 
         case 'Down':
-            offset = 2;
+            offset = 20;
             y--;
             step = player.attr('data-step');
             marginStyle = 'bottom';
-            marginChange = -0.5;
+            marginChange = -5;
             break;
 
         case 'Left':
             x--;
             marginStyle = 'left';
-            marginChange = -0.5;
+            marginChange = -5;
             break;
 
         case 'Right':
             x++;
             marginStyle = 'left'
-            marginChange = 0.5;
+            marginChange = 5;
 
             break;
     }
@@ -279,7 +339,7 @@ function moveChar(player, x, y, direction, w){
 
     var timerID = setInterval(function() {
         frame++;
-        player.css(marginStyle, ((frame*marginChange)+offset) + 'vh');
+        player.css(marginStyle, ((frame*marginChange)+offset) + '%');
         if(frame == 15){
             player.attr('src' , './assets/player/standing' + direction +'.png')
         }
@@ -319,12 +379,72 @@ function moveChar(player, x, y, direction, w){
 }
 
 function interact(w){
+    console.log(w.attr('data-type'))
+    let pz = $('.player-zone');
     switch(w.attr('data-type')){
+        
         case 'sign':
             let hud = $('.hud')
             $(hud).show();
             displayText(hud, $(w).attr('data-text'));
             break;
+
+        case 'door':
+            switch(w.attr('data-where')){
+                case 'room':
+                    
+                    $('.zoneTiles').empty();
+                    worldGen(room, 'room', pz);
+                    $('#5-6').append(pz);
+                    $('.zoneTiles').css('width', '80vh');
+                    $('.zoneTiles').css('height', '80%');
+                    $(pz).css('width', '8vh');
+                    $(pz).css('height', '8%');
+                    
+                    
+                    console.log(pz.attr('data-zone'));
+                    if(pz.attr('data-zone') == 'roomF2'){
+                        forceMove(10,8);
+                    }
+
+                    else{
+                        forceMove(7,2);
+                    }
+                    
+                    $(pz).attr('data-zone', 'room');
+                
+                    console.log('hit');
+                    break;
+
+                case 'roomF2':
+                    $('.zoneTiles').empty();
+                    $('.zoneTiles').css('width', '80vh')
+                    $('.zoneTiles').css('height', '80%')
+                    $(pz).css('width', '10vh');
+                    $(pz).css('height', '10%');
+                    worldGen(roomF2, 'roomF2');
+                    $('#8-6').append(pz);
+                    forceMove(8,6);
+                    console.log('hit');
+                    $(pz).attr('data-zone', 'roomF2');
+                    break;
+                case 'zone1':
+                    $('.zoneTiles').empty();
+                    $('.zoneTiles').css('width', '100vh');
+                    $('.zoneTiles').css('height', '100%');
+                    $(pz).css('width', '10vh');
+                    $(pz).css('height', '10%');
+                    worldGen(zone1, 'zone1');
+                    $('#6-6').append(pz);
+                    forceMove(6,6);
+                    $(pz).css('width', '10vh');
+                    $(pz).css('height', '10%');
+                    console.log('hit');
+                    $(pz).attr('data-zone', 'zone1');
+                    break;
+            }
+
+        
 
     }
     
@@ -454,7 +574,7 @@ function enemyPokemon(data, lvl, iv, ev, gender) {
     this.sprite = data.sprites.versions['generation-ii'].gold;
     this.intro = 'W i l d ' +data.name.toUpperCase() + ' appeared!';
     this.lvl = lvl;
-
+    
     this.Hp = calc_stat('hp', data.stats[0].base_stat, lvl, iv, ev);
     this.MaxHp = calc_stat('hp', data.stats[0].base_stat, lvl, iv, ev);
     this.Atk = calc_stat('atk', data.stats[1].base_stat, lvl, iv, ev);
@@ -592,5 +712,5 @@ async function fightScene(p, hud){
 }
 
 
-worldGen(nonezone);
-forceMove(5,8);
+worldGen(zone1, 'zone1');
+forceMove(5,6);
