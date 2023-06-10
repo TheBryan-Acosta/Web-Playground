@@ -47,7 +47,10 @@ body{
     flex-wrap: wrap;
     overflow: hidden;
     outline: 5px solid black; 
-    background-size: cover;
+    background-repeat: no-repeat;
+    background-size: 200% 180%;
+    background-position-x: 0% ;
+        background-position-y: 0%;
     
 
 }
