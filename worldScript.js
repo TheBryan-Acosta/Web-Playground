@@ -1,5 +1,5 @@
 let equipedPokemon = {
-	1: "mew",
+	1: "charmander",
 	2: "pikachu",
 };
 
@@ -221,6 +221,8 @@ $(document).ready(function () {
 			}
 		} else {
 			p.attr("src", "./assets/player/standing" + direction + ".png");
+			p.attr("data-direction", direction);
+
 		}
 	});
 
@@ -228,11 +230,11 @@ $(document).ready(function () {
 		let p = $(".player");
 		let direction = p.attr("data-direction");
 		var x = Number(p.attr("data-x"));
-		var y = Number(p.attr("data-y")) + 1;
+		var y = Number(p.attr("data-y"));
 		let target;
 		let worldObj = worldObjGen(eval($(".player-zone").attr("data-zone")));
 		console.log(x + "-" + y);
-		target = worldObj[x + "-" + y];
+		
 		switch (direction) {
 			case "Up":
 				y++;
@@ -248,6 +250,8 @@ $(document).ready(function () {
 				break;
 		}
 
+		target = worldObj[x + "-" + y];
+		console.log(target)
 		interact(target);
 	});
 });
@@ -322,6 +326,8 @@ function moveOutdoors(target, player, direction) {
 			}
 		}
 	}, 16.7);
+
+	player.attr("data-direction", direction);
 
 	switch (step) {
 		case "1":
@@ -462,7 +468,7 @@ function interact(target) {
 					$(".zoneTiles").css("height", "100%");
 					$(pz).css("width", "10vh");
 					$(pz).css("height", "10%");
-					gridGen(zone1, "zone1");
+					gridGen(openWorld, "zone1");
 					$("#6-6").append(pz);
 					$(pz).css("width", "10vh");
 					$(pz).css("height", "10%");
@@ -638,6 +644,9 @@ async function fightScene(p, hud) {
 		Math.floor(Math.random() * 1)
 	);
 
+	console.log(jsonDataE)
+	console.log(enemy)
+
 	let sprites = jsonDataP.sprites.versions["generation-ii"].gold;
 	let allTiles = $(".world-obj");
 	let frame = 0;
@@ -646,7 +655,7 @@ async function fightScene(p, hud) {
 
 	$(playerPokemonEl).css(
 		"background-image",
-		"url(https://archives.bulbagarden.net/media/upload/5/53/GSC_Ethan_Back.png)"
+		"url(./assets/ui/playerBack.png)"
 	);
 	$(enemyPokemonEl).css(
 		"background-image",
