@@ -1,28 +1,22 @@
+// This is the players currently equiped starter pokemon.
 let equipedPokemon = {
 	1: "charmander",
 	2: "pikachu",
 };
 
-const zone1 = [
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 5, 1, 1, 6, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 1, 1, 1, 1, 1, 0, 2, 2, 0],
-	[1, 1, 1, 1, 1, 1, 0, 2, 2, 0],
-	[1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
-];
+
+
+// tenbyten is the standard grid layout, & standard sizing.
 const tenbyten = Array(10).fill(Array(10).fill(0));
+// openworld is 20x18, each ID corresponds to a different tile.
+
 const openWorld = [
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 5, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
 	[1, 1, 1, 1, 1, 1, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
 	[1, 1, 1, 1, 1, 1, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
@@ -30,7 +24,7 @@ const openWorld = [
 	[1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1],
-	[0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1],
+	[0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1],
 	[1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -63,70 +57,96 @@ const roomF2 = [
 
 //create the view
 
-function worldWalkable() {
+// ID 0
+function walkableTile() {
 	this.walkable = true;
 }
 
-function worldUnwalkable() {
+// ID 1
+function unwalkableTile() {
 	this.walkable = false;
 }
 
-function worldShrub() {
+// ID 2
+function shrubTile() {
 	this.walkable = true;
 	this.enemys = true;
 }
 
-function zone1Sign() {
+// ID 5
+//https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit
+function jokeTile() {
+	
 	this.walkable = false;
 	this.type = "sign";
-	this.text = "Welcome to zone1!";
+	this.text = "joke";
 }
 
-function zoneRoom() {
+// ID 6
+function toRoom() {
 	this.walkable = false;
 	this.type = "door";
 	this.where = "room";
 	this.grid = room;
 }
 
-function zoneRoomF2() {
+// ID 7
+function toRoomF2() {
 	this.walkable = false;
 	this.type = "door";
 	this.where = "roomF2";
 	this.grid = roomF2;
 }
-function zoneArea1() {
+
+// ID 8
+function toOpen() {
 	this.walkable = false;
 	this.type = "door";
-	this.where = "zone1";
-	this.grid = zone1;
+	this.where = "openworld";
+}
+//GAME OBJECTS
+function gameInstance() {
+	this.player = new Player();
+	this.world = new World();
+}
+let newSave = new gameInstance;
+
+let game = newSave
+
+// PLAYER
+function Player() {
+	this.pokemonInv = {
+		1: "charmander",
+		2: "pikachu",
+	};
+
+	this.x = 5;
+	this.y = 13;
+	this.location = 'openWorld';
+	this.direction = 'Up';
+	this.step = 1;
 }
 
-$(".fight-screen").hide();
-$(".pokebar").hide();
-worldObjGen(openWorld);
+//WORLD
+function World() {
+	this.openWorld = {
+		data: worldObjGen(openWorld),
+		backgroundSize: '200vh',
+		cameraSize: '10vh',
+		exit_xy: '',
+		exit_margin: [0,0]
+	};
+	this.room = {
+		data: worldObjGen(room),
+		backgroundSize: '80vh',
+		cameraSize: '10vh',
 
-function gridGen(grid, img) {
-	$(".zoneTiles").css(
-		"background-image",
-		"url('./assets/enviroment/" + img + ".png'"
-	);
+		type: 'indoors'
+	};
 
-	for (var y = 0; y < 10; y++) {
-		for (x = 0; x < 10; x++) {
-			var objEl = document.createElement("div");
-			$(objEl).css("background-size", "cover");
 
-			$(objEl).addClass("world-obj");
-			$(objEl).css("width", 100 / grid.length + "%");
-			$(objEl).css("height", 100 / grid.length + "%");
-
-			$(objEl).attr("id", x + 1 + "-" + Math.abs(y - 10));
-
-			$(".zoneTiles").append(objEl);
-		}
-	}
 }
+
 
 function worldObjGen(zoneData) {
 	let worldObj = {};
@@ -138,17 +158,17 @@ function worldObjGen(zoneData) {
 			switch (id) {
 				case 0:
 					//empty
-					objdata = new worldWalkable();
+					objdata = new walkableTile();
 					break;
 
 				case 1:
 					//grass
-					objdata = new worldUnwalkable();
+					objdata = new unwalkableTile();
 					break;
 
 				case 2:
 					//enemyshrub
-					objdata = new worldShrub();
+					objdata = new shrubTile();
 
 					break;
 
@@ -157,21 +177,21 @@ function worldObjGen(zoneData) {
 
 				case 5:
 					//zone 1 sign
-					objdata = new zone1Sign();
+					objdata = new jokeTile();
 
 					break;
 
 				case 6:
-					objdata = new zoneRoom();
+					objdata = new toRoom();
 					break;
 
 				case 7:
-					objdata = new zoneRoomF2();
+					objdata = new toRoomF2();
 
 					break;
 
 				case 8:
-					objdata = new zoneArea1();
+					objdata = new toOpen();
 
 					break;
 			}
@@ -182,16 +202,52 @@ function worldObjGen(zoneData) {
 	return worldObj;
 }
 
+$(".fight-screen").hide();
+$(".pokebar").hide();
+worldObjGen(openWorld);
+
+function changeScene(scene) {
+	game.world[game.player.location].exit_margin = [$(".scene").css('marginLeft'), $(".scene").css('marginTop')];
+	game.world[game.player.location].exit_xy = [game.player.x,game.player.y]
+
+	game.player.location = scene
+
+	console.log(game)
+
+	$(".scene").attr(
+		"src",
+		"./assets/enviroment/" + scene + ".png"
+	);
+	$(".scene").css(
+		"height",
+		game.world[scene].backgroundSize
+	);
+	$(".camera-center").css(
+		"width",
+		game.world[scene].cameraSize
+	);
+	$(".camera-center").css(
+		"height",
+		game.world[scene].cameraSize
+	);
+	$(".player-zone").css(
+		"width",
+		game.world[scene].cameraSize
+	);
+	$(".player-zone").css(
+		"height",
+		game.world[scene].cameraSize
+	);
+}
+
+
 $(document).ready(function () {
 	$(".move-btn").click(function () {
-		let direction = $(this).attr("id");
+		game.player.direction = $(this).attr("id");
 		var p = $(".player");
-		let pz = $(".player-zone");
-		var x = Number(p.attr("data-x"));
-		var y = Number(p.attr("data-y"));
-		let target;
-		let worldObj = worldObjGen(eval($(pz).attr("data-zone")));
-		console.log(worldObj);
+		let {x, y, location, direction} = game.player;
+		let worldData = game.world[location].data;
+
 		switch (direction) {
 			case "Up":
 				y++;
@@ -206,34 +262,21 @@ $(document).ready(function () {
 				x++;
 				break;
 		}
-
-		target = worldObj[x + "-" + y];
+		let target = worldData[x + "-" + y];
 
 		if (target.walkable === true) {
-			switch (pz.attr("data-outdoors")) {
-				case "true":
-					moveOutdoors(target, p, direction);
-					break;
 
-				case "false":
-					moveIndoors(p, x, y, direction, target);
-					break;
-			}
+					moveOutdoors(target, p, direction);
+
+
 		} else {
 			p.attr("src", "./assets/player/standing" + direction + ".png");
-			p.attr("data-direction", direction);
-
 		}
 	});
 
 	$("#Int").click(function () {
-		let p = $(".player");
-		let direction = p.attr("data-direction");
-		var x = Number(p.attr("data-x"));
-		var y = Number(p.attr("data-y"));
-		let target;
-		let worldObj = worldObjGen(eval($(".player-zone").attr("data-zone")));
-		console.log(x + "-" + y);
+		let {x, y, location, direction} = game.player;
+		let worldData = game.world[location].data;
 		
 		switch (direction) {
 			case "Up":
@@ -250,47 +293,40 @@ $(document).ready(function () {
 				break;
 		}
 
-		target = worldObj[x + "-" + y];
-		console.log(target)
+		let target = worldData[x + "-" + y];
 		interact(target);
 	});
 });
 
 function moveOutdoors(target, player, direction) {
-	let ztEl = $(".zoneTiles");
-	let background_x = [];
-	background_x = $(ztEl).css("backgroundPositionX").split("%");
-	background_x = Number(background_x[0]);
+	let ztEl = $(".scene");
 
-	let background_y = [];
-	background_y = $(ztEl).css("backgroundPositionY").split("%");
-	background_y = Number(background_y[0]);
+	let background_x = Math.round(10*(Number($(ztEl).css("marginLeft").replace('px', '')) / $(".container").height() * 100)) / 10;
+
+	let background_y = Math.round(10*(Number($(ztEl).css("marginTop").replace('px', '')) / $(".container").height() * 100)) / 10;
 
 	let step = "";
 	let X_change = 0;
 	let Y_change = 0;
 
-	let player_x = player.attr("data-x");
-	let player_y = player.attr("data-y");
-
 	switch (direction) {
 		case "Up":
-			step = player.attr("data-step");
-			Y_change = -0.625;
-			player.attr("data-y", Number(player_y) + 1);
+			step = game.player.step;
+			Y_change = 1;
+			game.player.y++
 			break;
 		case "Down":
-			step = player.attr("data-step");
-			Y_change = 0.625;
-			player.attr("data-y", Number(player_y) - 1);
+			step = game.player.step;
+			Y_change = -1;
+			game.player.y--
 			break;
 		case "Left":
-			X_change = -0.5;
-			player.attr("data-x", Number(player_x) - 1);
+			X_change = 1;
+			game.player.x--
 			break;
 		case "Right":
-			X_change = 0.5;
-			player.attr("data-x", Number(player_x) + 1);
+			X_change = -1;
+			game.player.x++
 			break;
 	}
 
@@ -300,14 +336,13 @@ function moveOutdoors(target, player, direction) {
 	let frame = 0;
 	let walk_animation = setInterval(function () {
 		frame++;
-
 		$(ztEl).css(
-			"backgroundPositionX",
-			Number(background_x) + X_change * frame + "%"
+			"marginLeft",
+			background_x + X_change * frame + "vh"
 		);
 		$(ztEl).css(
-			"backgroundPositionY",
-			Number(background_y) + Y_change * frame + "%"
+			"marginTop",
+			background_y + Y_change * frame + "vh"
 		);
 
 		if (frame == 15) {
@@ -322,103 +357,29 @@ function moveOutdoors(target, player, direction) {
 					let hud = $(".hud");
 					$(".control-zone").hide();
 					fightScene(player, hud);
-				}
+				} 
 			}
 		}
 	}, 16.7);
 
-	player.attr("data-direction", direction);
-
-	switch (step) {
-		case "1":
-			player.attr("data-step", "2");
+	switch(game.player.step){
+		case 1:
+			game.player.step++;
 			break;
-		case "2":
-			player.attr("data-step", "1");
+		case 2:
+			game.player.step--;
 			break;
 	}
+
 }
 
 //MOVE INDOORS
-function moveIndoors(player, x, y, direction, target) {
-	$("button").prop("disabled", true);
-	let marginStyle;
-	let marginChange;
-	var frame = 0;
-	let step = "";
-	let offset = 0;
-	switch (direction) {
-		case "Up":
-			offset = 20;
-			step = player.attr("data-step");
-			marginStyle = "bottom";
-			marginChange = 5;
-			break;
-
-		case "Down":
-			offset = 20;
-			step = player.attr("data-step");
-			marginStyle = "bottom";
-			marginChange = -5;
-			break;
-
-		case "Left":
-			marginStyle = "left";
-			marginChange = -5;
-			break;
-
-		case "Right":
-			marginStyle = "left";
-			marginChange = 5;
-
-			break;
-	}
-
-	player.attr("src", "./assets/player/walking" + direction + step + ".png");
-
-	var timerID = setInterval(function () {
-		frame++;
-		player.css(marginStyle, frame * marginChange + offset + "%");
-		if (frame == 15) {
-			player.attr("src", "./assets/player/standing" + direction + ".png");
-		}
-		if (frame == 20) {
-			clearInterval(timerID);
-			player.css("left", "0");
-			player.css("bottom", "2vh");
-
-			$("#" + x + "-" + y).append($(".player-zone"));
-
-			$("button").prop("disabled", false);
-
-			if (target.enemys == true) {
-				if (Math.random() > 0.66) {
-					let hud = $(".hud");
-					$(".control-zone").hide();
-					fightScene(player, hud);
-				}
-			}
-		}
-	}, 16.7);
-	player.attr("data-x", x);
-	player.attr("data-y", y);
-
-	player.attr("data-direction", direction);
-
-	switch (step) {
-		case "1":
-			player.attr("data-step", "2");
-			break;
-		case "2":
-			player.attr("data-step", "1");
-			break;
-	}
+function moveIndoors(game, p) {
 }
 
-function interact(target) {
-	let pz = $(".player-zone");
 
-	console.log(target);
+function interact(target) {
+
 	switch (target.type) {
 		case "sign":
 			let hud = $(".hud");
@@ -429,61 +390,49 @@ function interact(target) {
 		case "door":
 			switch (target.where) {
 				case "room":
-					$(".zoneTiles").empty();
-
-					gridGen(target.grid, "room");
-
-					$("#8-2").append(pz);
-					$(".zoneTiles").css("width", "80vh");
-					$(".zoneTiles").css("height", "80%");
-					$(pz).css("width", "8vh");
-					$(pz).css("height", "8%");
-
-					$(pz).attr("data-zone", "room");
-					$(pz).attr("data-outdoors", "false");
-					$(".player").attr("data-x", "8");
-					$(".player").attr("data-y", "2");
-
-					$(".zoneTiles").css("background-size", "cover");
+					if(game.player.location == 'openWorld'){
+						game.player.x = 7;
+						game.player.y = 2;
+						$('.scene').css(
+							"marginLeft",
+							"-30vh"
+						);
+						$('.scene').css(
+							"marginTop",
+							"-70vh"
+						);
+					}
+					changeScene("room");
 
 					break;
 
 				case "roomF2":
-					$(".zoneTiles").empty();
-					$(".zoneTiles").css("width", "80vh");
-					$(".zoneTiles").css("height", "80%");
-					$(pz).css("width", "10vh");
-					$(pz).css("height", "10%");
-					gridGen(roomF2, "roomF2");
-					$("#8-6").append(pz);
 
-					$(pz).attr("data-zone", "roomF2");
-					$(pz).attr("data-outdoors", "false");
-
-					$(".zoneTiles").css("background-size", "cover");
 					break;
 				case "zone1":
-					$(".zoneTiles").empty();
-					$(".zoneTiles").css("width", "100vh");
-					$(".zoneTiles").css("height", "100%");
-					$(pz).css("width", "10vh");
-					$(pz).css("height", "10%");
-					gridGen(openWorld, "zone1");
-					$("#6-6").append(pz);
-					$(pz).css("width", "10vh");
-					$(pz).css("height", "10%");
-
-					$(pz).attr("data-outdoors", "true");
-					$(pz).attr("data-zone", "zone1");
-
-					$(".zoneTiles").css("background-size", "200% 180%");
 
 					break;
 			}
 	}
 }
 
-function displayText(hud, text, i) {
+async function displayText(hud, text, i) {
+	if(text == 'joke'){
+		let response = await fetch(
+			"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
+		);
+		let jokeJSON = await response.json();
+
+		while(jokeJSON.delivery.length >= 40 || jokeJSON.setup.length >=  40){
+			response = await fetch(
+				"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
+			);
+			jokeJSON = await response.json();
+		}
+		
+		text = jokeJSON.setup + '~' + jokeJSON.delivery;
+	}
+
 	if (!i) {
 		i = 0;
 	}
@@ -491,7 +440,7 @@ function displayText(hud, text, i) {
 	let char = 0;
 	let textScroll;
 	let buildText = "";
-	let textArr = text.split("split");
+	let textArr = text.split("~");
 	let currText = textArr[i];
 	textScroll = setInterval(function () {
 		buildText = buildText + currText[char];
@@ -626,7 +575,7 @@ function enemyPokemon(data, lvl, iv, ev, gender) {
 
 async function fightScene(p, hud) {
 	let responseP = await fetch(
-		"https://pokeapi.co/api/v2/pokemon/" + $(p).attr("data-pokemon")
+		"https://pokeapi.co/api/v2/pokemon/" + 'charmander'
 	);
 	let jsonDataP = await responseP.json();
 
@@ -644,8 +593,6 @@ async function fightScene(p, hud) {
 		Math.floor(Math.random() * 1)
 	);
 
-	console.log(jsonDataE)
-	console.log(enemy)
 
 	let sprites = jsonDataP.sprites.versions["generation-ii"].gold;
 	let allTiles = $(".world-obj");
@@ -759,5 +706,5 @@ async function fightScene(p, hud) {
 	);
 }
 
-gridGen(zone1, "zone1");
+changeScene('openWorld');
 snapTo(5, 5);

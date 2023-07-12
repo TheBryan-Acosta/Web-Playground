@@ -9,13 +9,17 @@
 </head>
 <body>
     <div class="container">
-        <div class="world">
-            <div class="player-zone" data-zone-x="0" data-zone-y="0" data-outdoors="true" data-zone="openWorld">
-                <img class="player" data-x ="5" data-y="13" data-pokemon="charmander" data-step="1" src="./assets/player/standingUp.png">
-            </div>
+        <img class="scene" src="./assets/enviroment/openWorld.png">
 
-            <div class="zoneTiles">
-                
+        <div class="world">
+            <div class="view">
+                <div class="camera-center">
+                    <div class="player-zone">
+                        <img class="player" src="./assets/player/standingUp.png">
+                    </div>
+
+                </div>
+
             </div>
 
             <div class="control-zone">
@@ -28,6 +32,7 @@
 
             <div class="world-filter"></div>
 
+            
             <div class="fight-screen">
                 <div class="player-pokemon"></div>
                 <div class="enemy-pokemon"></div>
