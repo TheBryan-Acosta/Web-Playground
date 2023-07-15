@@ -10,11 +10,17 @@ let equipedPokemon = {
 const tenbyten = Array(10).fill(Array(10).fill(0));
 // openworld is 20x18, each ID corresponds to a different tile.
 
+//Portal == [x,y,place,grid]
+// ID KEY
+// 0 - Unwalkable Tiles
+// 1 - Walkable Tiles
+// 2 - Random Enemy Shrub
+// 3
 const openWorld = [
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 0, 5, 1, 1, 6, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	[1, 0, 5, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1],
@@ -41,7 +47,7 @@ const room = [
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-	[1, 1, 1, 1, 1, 1, 8, 8, 1, 1],
+	[1, 1, 1, 1, 1, 1, 4, 4, 1, 1],
 ];
 
 const roomF2 = [
@@ -71,6 +77,16 @@ function unwalkableTile() {
 function shrubTile() {
 	this.walkable = true;
 	this.enemys = true;
+}
+
+// ID 3
+function Portal(x,y,place,grid) {
+	this.type = 'portal';
+	this.x = x;
+	this.y = y;
+	this.where = place;
+	this.height = grid.length;
+	this.width = grid[0].length;
 }
 
 // ID 5
@@ -120,8 +136,8 @@ function Player() {
 		2: "pikachu",
 	};
 
-	this.x = 5;
-	this.y = 13;
+	this.x = 10;
+	this.y = 10;
 	this.location = 'openWorld';
 	this.direction = 'Up';
 	this.step = 1;
@@ -133,8 +149,6 @@ function World() {
 		data: worldObjGen(openWorld),
 		backgroundSize: '200vh',
 		cameraSize: '10vh',
-		exit_xy: '',
-		exit_margin: [0,0]
 	};
 	this.room = {
 		data: worldObjGen(room),
@@ -146,6 +160,9 @@ function World() {
 
 
 }
+
+Teleport(new Portal(game.player.x, game.player.y,'openWorld', openWorld));
+
 
 
 function worldObjGen(zoneData) {
@@ -172,8 +189,13 @@ function worldObjGen(zoneData) {
 
 					break;
 
-				case 4:
+				case 3:
+					objdata = new Portal(7,2,'room', room);
 					break;
+
+				case 4:
+				objdata = new Portal(6,14,'openWorld', openWorld);
+				break;
 
 				case 5:
 					//zone 1 sign
@@ -190,10 +212,6 @@ function worldObjGen(zoneData) {
 
 					break;
 
-				case 8:
-					objdata = new toOpen();
-
-					break;
 			}
 			objdata.xy = x + 1 + "-" + Math.abs(y - zoneData.length);
 			worldObj[x + 1 + "-" + Math.abs(y - zoneData.length)] = objdata;
@@ -206,38 +224,34 @@ $(".fight-screen").hide();
 $(".pokebar").hide();
 worldObjGen(openWorld);
 
-function changeScene(scene) {
-	game.world[game.player.location].exit_margin = [$(".scene").css('marginLeft'), $(".scene").css('marginTop')];
-	game.world[game.player.location].exit_xy = [game.player.x,game.player.y]
+function Teleport(data) {
+	console.log(data)
+	game.player.x = data.x;
+	game.player.y = data.y;
+	game.player.location = data.where;
 
-	game.player.location = scene
+	$('.world-filter').css('backgroundColor', '')
 
-	console.log(game)
+	$(".scene").css(
+		"marginLeft",
+		 (10) + ((data.width/2 - data.x) * 20) + 'vh'
+	);
 
+	$(".scene").css(
+		"marginTop",
+		(10) - ((data.height/2 - data.y + 1) * 20) + 'vh'
+	);
+	
+	
 	$(".scene").attr(
 		"src",
-		"./assets/enviroment/" + scene + ".png"
+		"./assets/enviroment/" + data.where + ".png"
 	);
 	$(".scene").css(
 		"height",
-		game.world[scene].backgroundSize
+		game.world[data.where].backgroundSize
 	);
-	$(".camera-center").css(
-		"width",
-		game.world[scene].cameraSize
-	);
-	$(".camera-center").css(
-		"height",
-		game.world[scene].cameraSize
-	);
-	$(".player-zone").css(
-		"width",
-		game.world[scene].cameraSize
-	);
-	$(".player-zone").css(
-		"height",
-		game.world[scene].cameraSize
-	);
+	
 }
 
 
@@ -265,7 +279,6 @@ $(document).ready(function () {
 		let target = worldData[x + "-" + y];
 
 		if (target.walkable === true) {
-
 					moveOutdoors(target, p, direction);
 
 
@@ -300,7 +313,6 @@ $(document).ready(function () {
 
 function moveOutdoors(target, player, direction) {
 	let ztEl = $(".scene");
-
 	let background_x = Math.round(10*(Number($(ztEl).css("marginLeft").replace('px', '')) / $(".container").height() * 100)) / 10;
 
 	let background_y = Math.round(10*(Number($(ztEl).css("marginTop").replace('px', '')) / $(".container").height() * 100)) / 10;
@@ -387,32 +399,10 @@ function interact(target) {
 			displayText(hud, target.text);
 			break;
 
-		case "door":
-			switch (target.where) {
-				case "room":
-					if(game.player.location == 'openWorld'){
-						game.player.x = 7;
-						game.player.y = 2;
-						$('.scene').css(
-							"marginLeft",
-							"-30vh"
-						);
-						$('.scene').css(
-							"marginTop",
-							"-70vh"
-						);
-					}
-					changeScene("room");
-
-					break;
-
-				case "roomF2":
-
-					break;
-				case "zone1":
-
-					break;
-			}
+		case "portal":
+				$('.world-filter').css('backgroundColor', 'black')
+			setTimeout(function() { Teleport(target); }, 300);
+			
 	}
 }
 
@@ -595,7 +585,6 @@ async function fightScene(p, hud) {
 
 
 	let sprites = jsonDataP.sprites.versions["generation-ii"].gold;
-	let allTiles = $(".world-obj");
 	let frame = 0;
 	let playerPokemonEl = $(".player-pokemon");
 	let enemyPokemonEl = $(".enemy-pokemon");
@@ -608,22 +597,18 @@ async function fightScene(p, hud) {
 		"background-image",
 		"url(" + enemy.sprite.front_default + ")"
 	);
+	$('.world-filter').css('transition', '.7s')
 
+	$('.world-filter').css('backgroundColor', 'white')
 	startAni = setInterval(
 		await function () {
-			if (frame < 100) {
-				$(allTiles[frame]).css("background", "black");
-			}
-
 			frame++;
 
-			if (frame == 100) {
-				p.hide();
-			}
 
 			if (frame == 130) {
 				$(".fight-screen").show();
 				$(hud).show();
+				$('.world-filter').css('backgroundColor', 'black')
 			}
 
 			if (frame > 130 && frame < 200) {
@@ -706,5 +691,4 @@ async function fightScene(p, hud) {
 	);
 }
 
-changeScene('openWorld');
 snapTo(5, 5);
