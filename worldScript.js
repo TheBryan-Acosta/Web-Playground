@@ -4,18 +4,18 @@ let equipedPokemon = {
 	2: "pikachu",
 };
 
-
-
 // tenbyten is the standard grid layout, & standard sizing.
 const tenbyten = Array(10).fill(Array(10).fill(0));
 // openworld is 20x18, each ID corresponds to a different tile.
 
-//Portal == [x,y,place,grid]
 // ID KEY
 // 0 - Unwalkable Tiles
 // 1 - Walkable Tiles
 // 2 - Random Enemy Shrub
-// 3
+// 3 - Portal - openworld --> room
+// 4 - Portal - room --> openworld
+// 5 - Random joke signs
+
 const openWorld = [
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -39,7 +39,7 @@ const openWorld = [
 
 const room = [
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 1, 1, 7],
+	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 	[1, 1, 1, 1, 1, 1, 0, 0, 0, 0],
 	[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 1, 1, 1, 1, 1, 0, 0],
@@ -52,7 +52,7 @@ const room = [
 
 const roomF2 = [
 	[1, 1, 1, 1, 1, 1, 1, 1],
-	[1, 1, 1, 1, 1, 1, 1, 6],
+	[1, 1, 1, 1, 1, 1, 1, 1],
 	[0, 0, 1, 1, 1, 1, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0],
@@ -61,207 +61,182 @@ const roomF2 = [
 	[1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-//create the view
+//WORLD OBJECTS
 
 // ID 0
-function walkableTile() {
-	this.walkable = true;
+class walkableTile {
+	walkable = true;
 }
 
 // ID 1
-function unwalkableTile() {
-	this.walkable = false;
+class unwalkableTile {
+	walkable = false;
 }
 
 // ID 2
-function shrubTile() {
-	this.walkable = true;
-	this.enemys = true;
+class shrub {
+	walkable = true;
+	enemys = true;
 }
 
 // ID 3
-function Portal(x,y,place,grid) {
-	this.type = 'portal';
-	this.x = x;
-	this.y = y;
-	this.where = place;
-	this.height = grid.length;
-	this.width = grid[0].length;
+// The Portal constructor class passes 4 parameters - the players new x and y value, where you're going (location) and the 2d array that place uses.
+class Portal {
+	constructor(x, y, place, grid) {
+		this.type = "portal";
+		this.x = x;
+		this.y = y;
+		this.where = place;
+		this.height = grid.length;
+		this.width = grid[0].length;
+	}
 }
 
 // ID 5
 //https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit
-function jokeTile() {
-	
-	this.walkable = false;
-	this.type = "sign";
-	this.text = "joke";
+class jokeSign {
+	walkable = false;
+	type = "sign";
+	text = "joke";
 }
 
-// ID 6
-function toRoom() {
-	this.walkable = false;
-	this.type = "door";
-	this.where = "room";
-	this.grid = room;
+//GAME
+class gameInstance {
+	player = new Player();
+	world = new World();
 }
-
-// ID 7
-function toRoomF2() {
-	this.walkable = false;
-	this.type = "door";
-	this.where = "roomF2";
-	this.grid = roomF2;
-}
-
-// ID 8
-function toOpen() {
-	this.walkable = false;
-	this.type = "door";
-	this.where = "openworld";
-}
-//GAME OBJECTS
-function gameInstance() {
-	this.player = new Player();
-	this.world = new World();
-}
-let newSave = new gameInstance;
-
-let game = newSave
 
 // PLAYER
-function Player() {
-	this.pokemonInv = {
+//Starting values
+class Player {
+	pokemonInv = {
 		1: "charmander",
 		2: "pikachu",
 	};
 
-	this.x = 10;
-	this.y = 10;
-	this.location = 'openWorld';
-	this.direction = 'Up';
-	this.step = 1;
+	x = 10;
+	y = 10;
+	location = "openWorld";
+	direction = "Up";
+	step = 1;
 }
 
 //WORLD
-function World() {
-	this.openWorld = {
+class World {
+	openWorld = {
 		data: worldObjGen(openWorld),
-		backgroundSize: '200vh',
-		cameraSize: '10vh',
+		backgroundSize: "200vh",
+		cameraSize: "10vh",
 	};
-	this.room = {
+	room = {
 		data: worldObjGen(room),
-		backgroundSize: '80vh',
-		cameraSize: '10vh',
+		backgroundSize: "80vh",
+		cameraSize: "10vh",
 
-		type: 'indoors'
+		type: "indoors",
 	};
-
-
 }
 
-Teleport(new Portal(game.player.x, game.player.y,'openWorld', openWorld));
+//creating a new save -- Plans are to save this obj to local storage to save game data
+let newSave = new gameInstance();
 
+let game = newSave;
 
+Teleport(new Portal(game.player.x, game.player.y, "openWorld", openWorld));
 
+//worldObjGen accepts a 2d Array(zoneData), as its parameter. This function will create a hashmap of positions and its properties.
 function worldObjGen(zoneData) {
-	let worldObj = {};
+	let hashMap = {};
 
+	//in the double for loop. We iterate through the 2dArray, every array iteration is like incrementing y axis, and every index iteration is like incrementing x axis.
 	for (var y = 0; y < zoneData.length; y++) {
 		for (x = 0; x < zoneData[0].length; x++) {
 			var id = zoneData[y][x];
 			let objdata;
 			switch (id) {
+				//iterate through the entire 2d array. Depending on the integer - a new object(objdata) is created with a classes properties.
 				case 0:
-					//empty
+					//walkable
 					objdata = new walkableTile();
 					break;
 
 				case 1:
-					//grass
+					//unwalkable
 					objdata = new unwalkableTile();
 					break;
 
 				case 2:
 					//enemyshrub
-					objdata = new shrubTile();
+					objdata = new shrub();
 
 					break;
-
 				case 3:
-					objdata = new Portal(7,2,'room', room);
-					break;
+					//Portal - openWorld --> room
+					objdata = new Portal(7, 2, "room", room);
 
+					break;
 				case 4:
-				objdata = new Portal(6,14,'openWorld', openWorld);
-				break;
+					//Portal - room --> openWorld
+					objdata = new Portal(6, 14, "openWorld", openWorld);
+
+					break;
 
 				case 5:
-					//zone 1 sign
-					objdata = new jokeTile();
+					//joke signs
+					objdata = new jokeSign();
 
 					break;
-
-				case 6:
-					objdata = new toRoom();
-					break;
-
-				case 7:
-					objdata = new toRoomF2();
-
-					break;
-
 			}
+			//every iteration in the 2d array appends the key (x-y) and the properties from (objdata) to the hashmap.
 			objdata.xy = x + 1 + "-" + Math.abs(y - zoneData.length);
-			worldObj[x + 1 + "-" + Math.abs(y - zoneData.length)] = objdata;
+			hashMap[x + 1 + "-" + Math.abs(y - zoneData.length)] = objdata;
 		}
 	}
-	return worldObj;
+	return hashMap;
 }
 
 $(".fight-screen").hide();
 $(".pokebar").hide();
-worldObjGen(openWorld);
 
+//Teleport function takes in one parameter, data (the target Portal)
 function Teleport(data) {
-	console.log(data)
+	console.log(data);
+	//reassign the players information to the target location, x, and y values
 	game.player.x = data.x;
 	game.player.y = data.y;
 	game.player.location = data.where;
 
-	$('.world-filter').css('backgroundColor', '')
+	//remove the transition color
+	$(".world-filter").css("backgroundColor", "");
 
-	$(".scene").css(
-		"marginLeft",
-		 (10) + ((data.width/2 - data.x) * 20) + 'vh'
-	);
+	//set the position of the background - 10vh Left & 10vh Top is default to align the player to the grid on the background
 
-	$(".scene").css(
-		"marginTop",
-		(10) - ((data.height/2 - data.y + 1) * 20) + 'vh'
-	);
-	
-	
-	$(".scene").attr(
-		"src",
-		"./assets/enviroment/" + data.where + ".png"
-	);
-	$(".scene").css(
-		"height",
-		game.world[data.where].backgroundSize
-	);
-	
+	//one tile == 20vh x 20vh
+	//ten + (the new areas width(in tiles) divided by two), subtracted by the players new x cordinate then multiplied by 20)
+	$(".scene").css("marginLeft", 10 + (data.width / 2 - data.x) * 20 + "vh");
+
+	//ten - (the new areas height(in tiles) divided by two), subtracted by the players new y cordinate +1 then multiplied by 20)
+	$(".scene").css("marginTop", 10 - (data.height / 2 - data.y + 1) * 20 + "vh");
+
+	//set the background to the new area's image
+	$(".scene").attr("src", "./assets/enviroment/" + data.where + ".png");
+
+	//here we have to set the worlds height, each area is specific, included in the the world class.
+	$(".scene").css("height", game.world[data.where].backgroundSize);
 }
 
-
 $(document).ready(function () {
+	//listen for button click on the controls
 	$(".move-btn").click(function () {
+		//grab the id of the movement button clicked, which is set as the direction
 		game.player.direction = $(this).attr("id");
 		var p = $(".player");
-		let {x, y, location, direction} = game.player;
+		//deconstruct the player class for our variables
+		let { x, y, location, direction } = game.player;
+		//for each location exist its own hashmap of positions and properties, here we match the key with the locaiton of the players current position.😎
 		let worldData = game.world[location].data;
 
+		//Our target is the next tile in the direction we inputed,
 		switch (direction) {
 			case "Up":
 				y++;
@@ -276,21 +251,26 @@ $(document).ready(function () {
 				x++;
 				break;
 		}
+		//match the key and pull the properties of our target
 		let target = worldData[x + "-" + y];
 
+		//check if the walkable property is true
 		if (target.walkable === true) {
-					moveOutdoors(target, p, direction);
-
-
+			//if it is run the our move function which takes in three parameters, the target position, p(.player class in the dom), and direction of movement
+			moveOutdoors(target, p, direction);
 		} else {
+			//if it is not, set the direction of the player to our input
 			p.attr("src", "./assets/player/standing" + direction + ".png");
+			game.player.direction = direction;
 		}
 	});
 
+	//the same logic is implemented here but it runs our interact function
+
 	$("#Int").click(function () {
-		let {x, y, location, direction} = game.player;
+		let { x, y, location, direction } = game.player;
 		let worldData = game.world[location].data;
-		
+
 		switch (direction) {
 			case "Up":
 				y++;
@@ -313,68 +293,85 @@ $(document).ready(function () {
 
 function moveOutdoors(target, player, direction) {
 	let ztEl = $(".scene");
-	let background_x = Math.round(10*(Number($(ztEl).css("marginLeft").replace('px', '')) / $(".container").height() * 100)) / 10;
+	//we cant pull values in units of vh, only pixels. so I get the left margin, this is returned as a string, so i remove 'px' and convert the string to a number
+	//now we have to convert everything to vh for our standard sizing.
+	//our left margin is then divided by the view height in px rounded to a whole, then multiplied by 100 to now get our left margin in a percentage of our view width
+	let background_x = Math.round(
+		(Number($(ztEl).css("marginLeft").replace("px", "")) /
+			$(".container").height()) *
+			100
+	);
+	//same logic applied here to convert the top margin as a percentage of the view height
+	let background_y = Math.round(
+		(Number($(ztEl).css("marginTop").replace("px", "")) /
+			$(".container").height()) *
+			100
+	);
 
-	let background_y = Math.round(10*(Number($(ztEl).css("marginTop").replace('px', '')) / $(".container").height() * 100)) / 10;
-
+	//left and right steps are only applied to when you're moving up and down, so we set a blank for now
 	let step = "";
 	let X_change = 0;
 	let Y_change = 0;
 
+	//depending on the direction we set the change of x or y
+	//and decrement or increment the players x and y value
+	//& set our current step, pulling from our saved player data(1 is left foot & 2 is right foot)
 	switch (direction) {
 		case "Up":
 			step = game.player.step;
 			Y_change = 1;
-			game.player.y++
+			game.player.y++;
 			break;
 		case "Down":
 			step = game.player.step;
 			Y_change = -1;
-			game.player.y--
+			game.player.y--;
 			break;
 		case "Left":
 			X_change = 1;
-			game.player.x--
+			game.player.x--;
 			break;
 		case "Right":
 			X_change = -1;
-			game.player.x++
+			game.player.x++;
 			break;
 	}
 
+	//set the dom players image to the direction with step (1, 2, or '');
 	player.attr("src", "./assets/player/walking" + direction + step + ".png");
 
+	//disable our controls until the movement is done(no stacking commands)
 	$("button").prop("disabled", true);
+
 	let frame = 0;
 	let walk_animation = setInterval(function () {
 		frame++;
-		$(ztEl).css(
-			"marginLeft",
-			background_x + X_change * frame + "vh"
-		);
-		$(ztEl).css(
-			"marginTop",
-			background_y + Y_change * frame + "vh"
-		);
+		//since each tile is 20% of our view, the margin gets redefiend every frame by +- 1vh, 2vh... 20vh 😎
+		$(ztEl).css("marginLeft", background_x + X_change * frame + "vh");
+		$(ztEl).css("marginTop", background_y + Y_change * frame + "vh");
 
+		// looks more realistic if we stand for a bit during the animation.
 		if (frame == 15) {
 			player.attr("src", "./assets/player/standing" + direction + ".png");
 		}
 
+		//once we're at a +- 20vh change, stop and enable controls.
 		if (frame == 20) {
 			clearInterval(walk_animation);
 			$("button").prop("disabled", false);
 			if (target.enemys == true) {
+				//if the target position has the enemy == true property, theres a chance we start a battle
 				if (Math.random() > 0.66) {
 					let hud = $(".hud");
 					$(".control-zone").hide();
 					fightScene(player, hud);
-				} 
+				}
 			}
 		}
 	}, 16.7);
 
-	switch(game.player.step){
+	//increment or decrement step when we're finish.
+	switch (game.player.step) {
 		case 1:
 			game.player.step++;
 			break;
@@ -382,16 +379,10 @@ function moveOutdoors(target, player, direction) {
 			game.player.step--;
 			break;
 	}
-
 }
-
-//MOVE INDOORS
-function moveIndoors(game, p) {
-}
-
 
 function interact(target) {
-
+	//checkout the targets type
 	switch (target.type) {
 		case "sign":
 			let hud = $(".hud");
@@ -400,53 +391,76 @@ function interact(target) {
 			break;
 
 		case "portal":
-				$('.world-filter').css('backgroundColor', 'black')
-			setTimeout(function() { Teleport(target); }, 300);
-			
+			//when we enter a portal the we fade in and out and after a bit we teleport
+			$(".world-filter").css("backgroundColor", "black");
+			setTimeout(function () {
+				//our target is a portal so we pass that into our parameters
+				Teleport(target);
+			}, 300);
 	}
 }
 
+//display text on the hud, letter by letter
 async function displayText(hud, text, i) {
-	if(text == 'joke'){
+	//if our text is a joke - I used the joke api to produce a two part joke, spliting the setup and delivery with a ~ and declaring text as this
+	if (text == "joke") {
+		//GET request
 		let response = await fetch(
 			"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
 		);
+
 		let jokeJSON = await response.json();
 
-		while(jokeJSON.delivery.length >= 40 || jokeJSON.setup.length >=  40){
+		//only use jokes that conform to the hud size
+		while (jokeJSON.delivery.length >= 40 || jokeJSON.setup.length >= 40) {
 			response = await fetch(
 				"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
 			);
 			jokeJSON = await response.json();
 		}
-		
-		text = jokeJSON.setup + '~' + jokeJSON.delivery;
+
+		text = jokeJSON.setup + "~" + jokeJSON.delivery;
 	}
 
+	//clear any text in the hud
+	$(hud).text(" ");
+	//current character index
+	let char = 0;
+	//buildText is the string that displays in the hud
+	let buildText = "";
+	//The text passed in the parameter gets split up with any ~ characters, resulting in an array of strings called textArr
+	let textArr = text.split("~");
+
+	//if i does not exist set i equal to 0
 	if (!i) {
 		i = 0;
 	}
-	$(hud).text(" ");
-	let char = 0;
-	let textScroll;
-	let buildText = "";
-	let textArr = text.split("~");
-	let currText = textArr[i];
-	textScroll = setInterval(function () {
-		buildText = buildText + currText[char];
+	//currString is the text on the current iteration;
+	let currString = textArr[i];
+
+	//lights camera action
+	//set an interval to run our function every 30 milliseconds(how fast the text scrolls)
+	let textScroll = setInterval(function () {
+		//every loop add the next character from the current string to buildText(the text that the hud uses)
+		buildText = buildText + currString[char];
 		$(hud).text(buildText);
 		char++;
 
-		if (char === currText.length) {
+		//if the amount of characters reaches the end of our current string, stop the looping.
+		if (char === currString.length) {
 			clearInterval(textScroll);
 
+			//if there is no more strings in our text array
 			if (i + 1 == textArr.length) {
+				//add a one time event listener on the hud that clears the text and hides the hud
 				if ($(".fight-screen").is(":hidden") === true) {
 					$(hud).one("click", function () {
 						$(hud).text("");
 						$(hud).hide();
 					});
-				} else {
+				}
+				//if the fightscene is active, add an arrow to the hud and on click just clear the text
+				else {
 					let arrow = document.createElement("img");
 					$(arrow).addClass("arrow");
 					$(arrow).attr("src", "./assets/ui/arrow.png");
@@ -456,24 +470,22 @@ async function displayText(hud, text, i) {
 					});
 				}
 			}
+			//now increment i(associated with the textArr) so it goes to the next string
 			i++;
+			//if we're not at the last string in our array of text.
 			if (i < textArr.length) {
+				//add an arrow to the hud
 				let arrow = document.createElement("img");
 				$(arrow).addClass("arrow");
 				$(arrow).attr("src", "./assets/ui/arrow.png");
 				$(hud).append(arrow);
+				//add a one time event to recursivly call displayText again, this time i already exist, so the function will continue again on the next string in our textArr
 				$(hud).one("click", function () {
 					displayText(hud, text, i);
 				});
 			}
 		}
 	}, 30);
-}
-
-function snapTo(x, y) {
-	let pz = $(".player-zone");
-
-	$("#" + x + "-" + y).append(pz);
 }
 
 function pokebar(pokemonObj) {
@@ -565,7 +577,7 @@ function enemyPokemon(data, lvl, iv, ev, gender) {
 
 async function fightScene(p, hud) {
 	let responseP = await fetch(
-		"https://pokeapi.co/api/v2/pokemon/" + 'charmander'
+		"https://pokeapi.co/api/v2/pokemon/" + "charmander"
 	);
 	let jsonDataP = await responseP.json();
 
@@ -583,32 +595,27 @@ async function fightScene(p, hud) {
 		Math.floor(Math.random() * 1)
 	);
 
-
 	let sprites = jsonDataP.sprites.versions["generation-ii"].gold;
 	let frame = 0;
 	let playerPokemonEl = $(".player-pokemon");
 	let enemyPokemonEl = $(".enemy-pokemon");
 
-	$(playerPokemonEl).css(
-		"background-image",
-		"url(./assets/ui/playerBack.png)"
-	);
+	$(playerPokemonEl).css("background-image", "url(./assets/ui/playerBack.png)");
 	$(enemyPokemonEl).css(
 		"background-image",
 		"url(" + enemy.sprite.front_default + ")"
 	);
-	$('.world-filter').css('transition', '.7s')
+	$(".world-filter").css("transition", ".7s");
 
-	$('.world-filter').css('backgroundColor', 'white')
+	$(".world-filter").css("backgroundColor", "white");
 	startAni = setInterval(
 		await function () {
 			frame++;
 
-
 			if (frame == 130) {
 				$(".fight-screen").show();
 				$(hud).show();
-				$('.world-filter').css('backgroundColor', 'black')
+				$(".world-filter").css("backgroundColor", "black");
 			}
 
 			if (frame > 130 && frame < 200) {
@@ -690,5 +697,3 @@ async function fightScene(p, hud) {
 		16.7
 	);
 }
-
-snapTo(5, 5);
