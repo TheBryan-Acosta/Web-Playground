@@ -4,13 +4,11 @@ let equipedPokemon = {
 	2: "pikachu",
 };
 
-// tenbyten is the standard grid layout, & standard sizing.
-const tenbyten = Array(10).fill(Array(10).fill(0));
 // openworld is 20x18, each ID corresponds to a different tile.
 
 // ID KEY
-// 0 - Unwalkable Tiles
-// 1 - Walkable Tiles
+// 0 - Walkable Tiles
+// 1 - Unwalkable Tiles
 // 2 - Random Enemy Shrub
 // 3 - Portal - openworld --> room
 // 4 - Portal - room --> openworld
@@ -108,11 +106,9 @@ class gameInstance {
 
 // PLAYER
 //Starting values
+
 class Player {
-	pokemonInv = {
-		1: "charmander",
-		2: "pikachu",
-	};
+	pokemonInv = {};
 
 	x = 10;
 	y = 10;
@@ -138,17 +134,24 @@ class World {
 }
 
 //creating a new save -- Plans are to save this obj to local storage to save game data
+
 let newSave = new gameInstance();
 
 let game = newSave;
 
+async function giveStarterPokemon() {
+	game.player.pokemonInv = await createNewPokemon("charmander");
+}
+
+giveStarterPokemon();
+
 Teleport(new Portal(game.player.x, game.player.y, "openWorld", openWorld));
 
-//worldObjGen accepts a 2d Array(zoneData), as its parameter. This function will create a hashmap of positions and its properties.
+//worldObjGen accepts a 2d Array, as its parameter. This function will create a hashmap of positions and its properties.
 function worldObjGen(zoneData) {
 	let hashMap = {};
 
-	//in the double for loop. We iterate through the 2dArray, every array iteration is like incrementing y axis, and every index iteration is like incrementing x axis.
+	//in this double for loop. We iterate through the 2dArray, every array iteration is like incrementing y axis, and every index iteration is like incrementing x axis.
 	for (var y = 0; y < zoneData.length; y++) {
 		for (x = 0; x < zoneData[0].length; x++) {
 			var id = zoneData[y][x];
@@ -187,7 +190,7 @@ function worldObjGen(zoneData) {
 
 					break;
 			}
-			//every iteration in the 2d array appends the key (x-y) and the properties from (objdata) to the hashmap.
+			//every iteration in the 2d array sets the (x-y) as the key and the properties from (objdata).
 			objdata.xy = x + 1 + "-" + Math.abs(y - zoneData.length);
 			hashMap[x + 1 + "-" + Math.abs(y - zoneData.length)] = objdata;
 		}
@@ -200,7 +203,6 @@ $(".pokebar").hide();
 
 //Teleport function takes in one parameter, data (the target Portal)
 function Teleport(data) {
-	console.log(data);
 	//reassign the players information to the target location, x, and y values
 	game.player.x = data.x;
 	game.player.y = data.y;
@@ -291,17 +293,30 @@ $(document).ready(function () {
 	});
 });
 
+$(".menu").hide();
+
+$("#Menu").click(function () {
+	$(".menu").toggle();
+
+	$(".world-filter").css("backgroundColor", "rgba(0, 0, 0, 0.379)");
+	$(".control-zone").toggle();
+});
+
+$(".menu li").click(function () {
+	console.log(this);
+});
+
 function moveOutdoors(target, player, direction) {
 	let ztEl = $(".scene");
 	//we cant pull values in units of vh, only pixels. so I get the left margin, this is returned as a string, so i remove 'px' and convert the string to a number
 	//now we have to convert everything to vh for our standard sizing.
-	//our left margin is then divided by the view height in px rounded to a whole, then multiplied by 100 to now get our left margin in a percentage of our view width
+	//our left margin is then divided by the view height in px rounded to a whole, then multiplied by 100 to now get our left margin in a percentage of our view width over view height
 	let background_x = Math.round(
 		(Number($(ztEl).css("marginLeft").replace("px", "")) /
 			$(".container").height()) *
 			100
 	);
-	//same logic applied here to convert the top margin as a percentage of the view height
+	//same logic applies here to convert the top margin as a percentage of the view height
 	let background_y = Math.round(
 		(Number($(ztEl).css("marginTop").replace("px", "")) /
 			$(".container").height()) *
@@ -406,7 +421,7 @@ async function displayText(hud, text, i) {
 	if (text == "joke") {
 		//GET request
 		let response = await fetch(
-			"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
+			"https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
 		);
 
 		let jokeJSON = await response.json();
@@ -414,7 +429,7 @@ async function displayText(hud, text, i) {
 		//only use jokes that conform to the hud size
 		while (jokeJSON.delivery.length >= 40 || jokeJSON.setup.length >= 40) {
 			response = await fetch(
-				"https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
+				"https://v2.jokeapi.dev/joke/Programming?blacklistFlags=nsfw,religious,political,racist,sexist,explicit&type=twopart"
 			);
 			jokeJSON = await response.json();
 		}
@@ -488,23 +503,30 @@ async function displayText(hud, text, i) {
 	}, 30);
 }
 
+//here we create the small ui that shows how many pokemon you have in your inventory.
 function pokebar(pokemonObj) {
+	//inline flex container for our icons
 	let flexBox = $(".pokebarBalls");
+	//create full pokeballs for every key existing in our pokemon inventory and append to this flexbox
 	for (i = 0; i < 7; i++) {
 		if (Object.keys(pokemonObj).length > i) {
 			let barItem = document.createElement("img");
 			$(barItem).attr("src", "./assets/ui/pokeball.png");
 			$(flexBox).append(barItem);
+			//when we dont have anymore keys append an empty pokeball img instead
 		} else {
 			let barItem = document.createElement("img");
 			$(barItem).attr("src", "./assets/ui/emptyball.png");
 			$(flexBox).append(barItem);
 		}
 	}
+	//show the pokebar
 	$(".pokebar").show();
 }
 
+//this displays the enemy info pertaining to level, gender, name, and health
 function enemyInfoBar(pokeInfo) {
+	//deconstruct pokeInfo properties.
 	let { lvl, gender, name } = pokeInfo;
 	let pokeHealthEl = document.createElement("div");
 	$(pokeHealthEl).addClass("enemyhealth");
@@ -522,18 +544,18 @@ function enemyInfoBar(pokeInfo) {
 	$(".fight-screen").append(pokeHealthEl);
 }
 
-function playerInfoBar(pokeInfo, level, gender) {
+function playerInfoBar(pokeInfo) {
 	let pokeHealthEl = document.createElement("div");
 	$(pokeHealthEl).addClass("playerhealth");
 	$(pokeHealthEl).append("<h1>" + pokeInfo.name.toUpperCase() + "</h1>");
 	$(pokeHealthEl).append(
 		"<img src='./assets/ui/levelSym.png'>" +
 			"<h2>" +
-			level +
+			pokeInfo.lvl +
 			"" +
 			"</h2>" +
 			"<img src='./assets/ui/" +
-			gender +
+			pokeInfo.gender +
 			".png'>"
 	);
 	$(".fight-screen").append(pokeHealthEl);
@@ -552,59 +574,80 @@ function calc_stat(stat, base_value, lvl, iv, ev) {
 		);
 }
 
-function enemyPokemon(data, lvl, iv, ev, gender) {
-	switch (gender) {
-		case 0:
-			this.gender = "male";
-			break;
-		case 1:
-			this.gender = "female";
-			break;
-	}
-	this.name = data.name;
-	this.sprite = data.sprites.versions["generation-ii"].gold;
-	this.intro = "W i l d " + data.name.toUpperCase() + " appeared!";
-	this.lvl = lvl;
+async function createNewPokemon(name) {
+	let responseP = await fetch("https://pokeapi.co/api/v2/pokemon/" + name);
+	let data = await responseP.json();
+	console.log(data);
+	return new Pokemon(data, 5, 0, 0, 0);
+}
 
-	this.Hp = calc_stat("hp", data.stats[0].base_stat, lvl, iv, ev);
-	this.MaxHp = calc_stat("hp", data.stats[0].base_stat, lvl, iv, ev);
-	this.Atk = calc_stat("atk", data.stats[1].base_stat, lvl, iv, ev);
-	this.Def = calc_stat("def", data.stats[2].base_stat, lvl, iv, ev);
-	this.spAtk = calc_stat("spatk", data.stats[3].base_stat, lvl, iv, ev);
-	this.spDef = calc_stat("spdef", data.stats[4].base_stat, lvl, iv, ev);
-	this.Speed = calc_stat("speed", data.stats[5].base_stat, lvl, iv, ev);
+class Pokemon {
+	constructor(data, lvl, iv, ev, gender) {
+		switch (gender) {
+			case 0:
+				this.gender = "male";
+				break;
+			case 1:
+				this.gender = "female";
+				break;
+		}
+
+		this.type = [];
+		this.sprite = data.sprites.versions["generation-ii"].gold;
+		this.intro = "W i l d " + data.name.toUpperCase() + " appeared!";
+		this.lvl = lvl;
+
+		this.Hp = calc_stat("hp", data.stats[0].base_stat, lvl, iv, ev);
+		this.MaxHp = calc_stat("hp", data.stats[0].base_stat, lvl, iv, ev);
+		this.Atk = calc_stat("atk", data.stats[1].base_stat, lvl, iv, ev);
+		this.Def = calc_stat("def", data.stats[2].base_stat, lvl, iv, ev);
+		this.spAtk = calc_stat("spatk", data.stats[3].base_stat, lvl, iv, ev);
+		this.spDef = calc_stat("spdef", data.stats[4].base_stat, lvl, iv, ev);
+		this.Speed = calc_stat("speed", data.stats[5].base_stat, lvl, iv, ev);
+
+		if (data.types[1]) {
+			this.type.push(data.types[0].type.name);
+			this.type.push(data.types[1].type.name);
+		} else {
+			this.type.push(data.types[0].type.name);
+		}
+
+		this.name = data.name;
+
+		if (Math.floor(Math.random() * 3) == 1) {
+			this.shiny = true;
+		} else {
+			this.shiny = false;
+		}
+	}
 }
 
 async function fightScene(p, hud) {
-	let responseP = await fetch(
-		"https://pokeapi.co/api/v2/pokemon/" + "charmander"
-	);
-	let jsonDataP = await responseP.json();
-
-	let responseE = await fetch(
-		"https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * 251)
-	);
-	let jsonDataE = await responseE.json();
-
 	$(".control-zone").hide();
-	let enemy = new enemyPokemon(
-		jsonDataE,
-		Math.floor(Math.random() * 5) + 3,
-		0,
-		0,
-		Math.floor(Math.random() * 1)
-	);
-
-	let sprites = jsonDataP.sprites.versions["generation-ii"].gold;
+	let enemy = await createNewPokemon(Math.floor(Math.random() * 251));
+	console.log(enemy);
+	console.log(game.player);
+	let sprites = game.player.pokemonInv.sprite;
 	let frame = 0;
 	let playerPokemonEl = $(".player-pokemon");
 	let enemyPokemonEl = $(".enemy-pokemon");
 
 	$(playerPokemonEl).css("background-image", "url(./assets/ui/playerBack.png)");
-	$(enemyPokemonEl).css(
-		"background-image",
-		"url(" + enemy.sprite.front_default + ")"
-	);
+	switch (enemy.shiny) {
+		case true:
+			$(enemyPokemonEl).css(
+				"background-image",
+				"url(" + enemy.sprite.front_shiny + ")"
+			);
+			break;
+
+		case false:
+			$(enemyPokemonEl).css(
+				"background-image",
+				"url(" + enemy.sprite.front_default + ")"
+			);
+			break;
+	}
 	$(".world-filter").css("transition", ".7s");
 
 	$(".world-filter").css("backgroundColor", "white");
@@ -691,7 +734,7 @@ async function fightScene(p, hud) {
 
 			if (frame == 400) {
 				$(hud).css("background-image", "url(./assets/ui/fightbox.png)");
-				playerInfoBar(jsonDataP, "5", "male");
+				playerInfoBar(game.player.pokemonInv);
 			}
 		},
 		16.7

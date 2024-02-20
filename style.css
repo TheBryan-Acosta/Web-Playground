@@ -49,7 +49,6 @@ body{
     width: 100%;
     height: 100vh;
     pointer-events: none;
-    transition: .3s;
 
 }
 
@@ -122,6 +121,22 @@ body{
 
   background-color: #ff0000;
   color: #ff0000;
+}
+
+.int-btn{
+    position: absolute;
+    width: 7vh;
+    height: 7vh;
+    border-radius: 50%;
+    
+}
+
+.menu-btn{
+        border-radius: 50%;
+    position: absolute;
+    width: 7vh;
+    height: 7vh;
+    right: 0;    
 }
 
 #Up{

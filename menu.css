@@ -1,0 +1,22 @@
+.menu{
+  position: absolute;
+  height: 100vh;
+  width: 100vh;
+  background-image: url(./assets/menu/menu.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.menu li {
+  list-style-type: none;
+  font-size: 5vh;
+  height: 5vh;
+  width: 40vh;
+  padding: 3vh;
+  margin: 25vh 0vh -26vh 55vh;
+}
+
+.menu li :hover {
+  list-style-type: disc;
+}
