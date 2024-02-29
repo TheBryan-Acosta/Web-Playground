@@ -140,7 +140,10 @@ let newSave = new gameInstance();
 let game = newSave;
 
 async function giveStarterPokemon() {
-	game.player.pokemonInv = await createNewPokemon("charmander");
+	game.player.pokemonInv = [];
+	game.player.pokemonInv.push(await createNewPokemon("charmander"));
+	game.player.pokemonInv.push(await createNewPokemon("ditto"));
+	game.player.pokemonInv.push(await createNewPokemon("pikachu"));
 }
 
 giveStarterPokemon();
@@ -258,7 +261,7 @@ $(document).ready(function () {
 
 		//check if the walkable property is true
 		if (target.walkable === true) {
-			//if it is run the our move function which takes in three parameters, the target position, p(.player class in the dom), and direction of movement
+			//if it is run the move function which takes in three parameters, the target position, p(.player class in the dom), and direction of movement
 			moveOutdoors(target, p, direction);
 		} else {
 			//if it is not, set the direction of the player to our input
@@ -294,6 +297,7 @@ $(document).ready(function () {
 });
 
 $(".menu").hide();
+$(".pokemon-menu").hide();
 
 $("#Menu").click(function () {
 	$(".menu").toggle();
@@ -303,8 +307,80 @@ $("#Menu").click(function () {
 });
 
 $(".menu li").click(function () {
-	console.log(this);
+	switch (this.id) {
+		case "exit":
+			$(".menu").toggle();
+			$(".world-filter").css("backgroundColor", "rgba(0, 0, 0, 0.0)");
+			$(".control-zone").toggle();
+			break;
+
+		case "pokemon":
+			$(".menu").toggle();
+			pokemonMenu(game.player.pokemonInv);
+			$(".pokemon-menu").css(
+				"background-image",
+				"url(" + "./assets/menu/pokemon.png" + ")"
+			);
+
+			$(".pokemon-menu").toggle();
+	}
 });
+
+async function pokemonMenu(playerPokemon) {
+	let pokemonmenuEl = $(".pokemon-menu");
+	await playerPokemon[0].takeDamage(15);
+	await playerPokemon[1].takeDamage(10);
+
+	for (i = 0; i < playerPokemon.length; i++) {
+		let pokemenuLi = document.createElement("li");
+		let pokemonnameEl = document.createElement("p");
+		let pokemonlevelEl = document.createElement("p");
+		let pokemonhealthEl = document.createElement("p");
+		let pokemonMaxHpEl = document.createElement("p");
+		let pokemonhpbarEl = document.createElement("div");
+		let pokemoncolorbarEl = document.createElement("div");
+		let pokemonmenuIconEl = document.createElement("div");
+		let pokemonmenuArrowEl = document.createElement("div");
+
+		pokemonMaxHpEl.id = "maxhp";
+		pokemonmenuIconEl.id = "icon";
+		pokemonmenuArrowEl.id = "arrow2";
+		pokemonhpbarEl.id = "hpbar";
+		pokemoncolorbarEl.id = "hpbar2";
+		pokemonnameEl.id = "name";
+		pokemonlevelEl.id = "level";
+		pokemonhealthEl.id = "health";
+		pokemenuLi.id = "pokemon-slot-" + i;
+
+		$(pokemonnameEl).text(playerPokemon[i].name.toUpperCase());
+		$(pokemonlevelEl).text(playerPokemon[i].lvl);
+		$(pokemonhealthEl).text(playerPokemon[i].Hp + "/");
+		$(pokemonMaxHpEl).text(playerPokemon[i].MaxHp);
+
+		//math for color bar
+		console.log((playerPokemon[i].hp / playerPokemon[i].MaxHp) * 30 + 5);
+		$(pokemoncolorbarEl).css(
+			"width",
+			(playerPokemon[i].Hp / playerPokemon[i].MaxHp) * 30 + "vh"
+		);
+		if (playerPokemon[i].Hp / playerPokemon[i].MaxHp < 0.25) {
+			$(pokemoncolorbarEl).css("background-color", "#c21c1c");
+		} else if (playerPokemon[i].Hp / playerPokemon[i].MaxHp < 0.5) {
+			$(pokemoncolorbarEl).css("background-color", "#c28c1c");
+		}
+
+		pokemenuLi.append(pokemonmenuIconEl);
+		pokemenuLi.append(pokemonmenuArrowEl);
+		pokemenuLi.append(pokemonnameEl);
+		pokemenuLi.append(pokemonlevelEl);
+		pokemenuLi.append(pokemonhealthEl);
+		pokemenuLi.append(pokemonMaxHpEl);
+		pokemenuLi.append(pokemonhpbarEl);
+		pokemonhpbarEl.append(pokemoncolorbarEl);
+
+		pokemonmenuEl.append(pokemenuLi);
+	}
+}
 
 function moveOutdoors(target, player, direction) {
 	let ztEl = $(".scene");
@@ -619,6 +695,10 @@ class Pokemon {
 		} else {
 			this.shiny = false;
 		}
+	}
+
+	takeDamage(dmg) {
+		this.Hp = this.Hp - dmg;
 	}
 }
 
