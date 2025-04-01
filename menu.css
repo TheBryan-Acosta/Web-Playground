@@ -98,6 +98,7 @@
 
 
 #icon {
+  margin-top: -2.5vh;
   position: absolute;
   background-image: url(./assets/menu/iconsheet.png);
   background-size: 100vh;
@@ -114,16 +115,35 @@
   margin-left: +5vh;
 }
 
+
 #arrow2{
   position:absolute;
   background-size: contain;
   background-repeat: no-repeat;
   margin-left: 1vh;
-  margin-top: 2.5vh;
   width: 5vh;
   height: 5vh;
 }
 
 .pokemon-menu li:hover #arrow2 {
   background-image: url('./assets/menu/arrow.png');
+}
+
+.icon-hold {
+    margin-left: +5vh;
+}
+
+.pageselection {
+  position: absolute;
+  background-size: contain;
+  background-repeat: no-repeat;
+  width: 70vh;
+  height: 60vh;
+  background-image: url('./assets/menu/options1.png');
+  right: 0;
+  bottom: 0;
+}
+
+#pokeslot-0{
+  margin-top: 5vh;
 }

@@ -1,3 +1,12 @@
+//preloader
+jQuery(document).ready(function ($) {
+	$(window).load(function () {
+		setTimeout(function () {
+			$("#preloader").fadeOut("slow", function () {});
+		}, 2000);
+	});
+});
+
 // This is the players currently equiped starter pokemon.
 let equipedPokemon = {
 	1: "charmander",
@@ -13,6 +22,7 @@ let equipedPokemon = {
 // 3 - Portal - openworld --> room
 // 4 - Portal - room --> openworld
 // 5 - Random joke signs
+// 6 - npc
 
 const openWorld = [
 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
@@ -323,6 +333,7 @@ $(".menu li").click(function () {
 			);
 
 			$(".pokemon-menu").toggle();
+			break;
 	}
 });
 
@@ -350,7 +361,7 @@ async function pokemonMenu(playerPokemon) {
 		pokemonnameEl.id = "name";
 		pokemonlevelEl.id = "level";
 		pokemonhealthEl.id = "health";
-		pokemenuLi.id = "pokemon-slot-" + i;
+		pokemenuLi.id = "pokeslot-" + i;
 
 		$(pokemonnameEl).text(playerPokemon[i].name.toUpperCase());
 		$(pokemonlevelEl).text(playerPokemon[i].lvl);
@@ -378,11 +389,26 @@ async function pokemonMenu(playerPokemon) {
 		pokemenuLi.append(pokemonhpbarEl);
 		pokemonhpbarEl.append(pokemoncolorbarEl);
 
+		$(pokemenuLi).click(() => {
+			$(".pokemon-menu li").css("pointer-events", "none");
+
+			$(pokemenuLi).find("#icon").css("margin-left", "+5vh");
+			$(pokemenuLi).find("#icon").css("background-position", "-50vh -30vh");
+
+			$(pokemenuLi)
+				.find("#arrow2")
+				.css("background-image", "url('./assets/menu/arrow.png')");
+
+			let optionSelectionEl = document.createElement("div");
+			optionSelectionEl.className = "pageselection";
+			$(".pokemon-menu").append(optionSelectionEl);
+		});
+
 		pokemonmenuEl.append(pokemenuLi);
 	}
 }
 
-function moveOutdoors(target, player, direction) {
+async function moveOutdoors(target, player, direction) {
 	let ztEl = $(".scene");
 	//we cant pull values in units of vh, only pixels. so I get the left margin, this is returned as a string, so i remove 'px' and convert the string to a number
 	//now we have to convert everything to vh for our standard sizing.
@@ -406,24 +432,25 @@ function moveOutdoors(target, player, direction) {
 
 	//depending on the direction we set the change of x or y
 	//and decrement or increment the players x and y value
+	console.log(game.player);
 	//& set our current step, pulling from our saved player data(1 is left foot & 2 is right foot)
 	switch (direction) {
 		case "Up":
 			step = game.player.step;
-			Y_change = 1;
+			$(ztEl).animate({ top: "+=10vh" }, 336, "linear");
 			game.player.y++;
 			break;
 		case "Down":
 			step = game.player.step;
-			Y_change = -1;
+			$(ztEl).animate({ top: "-=10vh" }, 336, "linear");
 			game.player.y--;
 			break;
 		case "Left":
-			X_change = 1;
+			$(ztEl).animate({ left: "+=10vh" }, 336, "linear");
 			game.player.x--;
 			break;
 		case "Right":
-			X_change = -1;
+			$(ztEl).animate({ left: "-=10vh" }, 336, "linear");
 			game.player.x++;
 			break;
 	}
@@ -435,11 +462,9 @@ function moveOutdoors(target, player, direction) {
 	$("button").prop("disabled", true);
 
 	let frame = 0;
+
 	let walk_animation = setInterval(function () {
 		frame++;
-		//since each tile is 20% of our view, the margin gets redefiend every frame by +- 1vh, 2vh... 20vh 😎
-		$(ztEl).css("marginLeft", background_x + X_change * frame + "vh");
-		$(ztEl).css("marginTop", background_y + Y_change * frame + "vh");
 
 		// looks more realistic if we stand for a bit during the animation.
 		if (frame == 15) {
